@@ -1,11 +1,16 @@
-import { Button } from "@/components/ui/button"
+// src/App.tsx
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import BusquedaPage from "./pages/busqueda";
 
 function App() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-svh">
-      <Button>Click me</Button>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<BusquedaPage />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
