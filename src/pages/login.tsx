@@ -1,9 +1,10 @@
+// src/pages/Login.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { Menu } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function Registro() {
+export default function Login() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const location = useLocation();
@@ -52,12 +53,12 @@ export default function Registro() {
                             className="absolute top-16 left-6 w-72 bg-white border border-gray-200 rounded-md shadow-lg z-30"
                         >
                             <ul className="py-2">
-                                {location.pathname === "/registro" ? (
+                                <li><Link to="/registro" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Registro</Link></li>
+                                {location.pathname === "/login" ? (
                                     <li><Link to="/" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Ir a búsqueda</Link></li>
                                 ) : (
-                                    <li><Link to="/registro" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Registro</Link></li>
+                                    <li><Link to="/login" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Iniciar sesión</Link></li>
                                 )}
-                                <li><Link to="/login" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Iniciar sesión</Link></li>
                                 <li><Link to="/configuracion" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Configuración</Link></li>
                                 <li><Link to="/empresas" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Sección empresas</Link></li>
                             </ul>
@@ -67,13 +68,8 @@ export default function Registro() {
             </nav>
 
             <div className="flex flex-col items-center justify-center px-6 py-12">
-                <h1 className="text-2xl font-bold mb-6 text-[#127C82]">Registro</h1>
+                <h1 className="text-2xl font-bold mb-6 text-[#127C82]">Iniciar sesión</h1>
                 <form className="bg-white p-6 rounded-md shadow-md w-full max-w-md space-y-4">
-                    <input
-                        type="text"
-                        placeholder="Nombre"
-                        className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#64C1C1]"
-                    />
                     <input
                         type="email"
                         placeholder="Email"
@@ -88,7 +84,7 @@ export default function Registro() {
                         type="submit"
                         className="w-full bg-[#64C1C1] text-white font-semibold py-2 px-4 rounded hover:bg-[#4DA8A8]"
                     >
-                        Registrarse
+                        Ingresar
                     </button>
                 </form>
             </div>
