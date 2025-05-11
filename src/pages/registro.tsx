@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Menu } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Registro() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
+    const location = useLocation();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -20,7 +21,7 @@ export default function Registro() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#F6F6F6] text-[#202020]">
+        <div className="min-h-screen flex flex-col justify-between bg-[#F6F6F6] text-[#202020]">
             {/* Navbar */}
             <nav className="bg-white shadow px-6 py-5 flex items-center justify-between relative">
                 <div className="flex items-center gap-4">
@@ -32,9 +33,12 @@ export default function Registro() {
                     </div>
                 </div>
 
-                <div className="text-2xl font-bold text-[#127C82] tracking-tight">
+                <Link
+                    to="/" wwwwww
+                    className="text-2xl font-bold text-[#127C82] tracking-tight hover:opacity-80"
+                >
                     GuíaClick
-                </div>
+                </Link>
 
                 <div className="w-8" />
 
@@ -48,7 +52,11 @@ export default function Registro() {
                             className="absolute top-16 left-6 w-72 bg-white border border-gray-200 rounded-md shadow-lg z-30"
                         >
                             <ul className="py-2">
-                                <li><Link to="/registro" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Registro</Link></li>
+                                {location.pathname === "/registro" ? (
+                                    <li><Link to="/" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Ir a búsqueda</Link></li>
+                                ) : (
+                                    <li><Link to="/registro" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Registro</Link></li>
+                                )}
                                 <li><Link to="/login" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Iniciar sesión</Link></li>
                                 <li><Link to="/configuracion" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Configuración</Link></li>
                                 <li><Link to="/empresas" className="block px-6 py-3 text-base hover:bg-[#f0f0f0]">Sección empresas</Link></li>
@@ -84,6 +92,11 @@ export default function Registro() {
                     </button>
                 </form>
             </div>
+
+            {/* Footer */}
+            <footer className="bg-white shadow-inner text-center py-4 text-sm text-gray-500">
+                © {new Date().getFullYear()} GuíaClick - Todos los derechos reservados
+            </footer>
         </div>
     );
 }
