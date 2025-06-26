@@ -1,3 +1,4 @@
+// src/pages/BusquedaPage.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -8,6 +9,8 @@ import { Link } from "react-router-dom";
 export default function BusquedaPage() {
     const [query, setQuery] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [codigo, setCodigo] = useState("");
     const menuRef = useRef(null);
 
     useEffect(() => {
@@ -102,11 +105,60 @@ export default function BusquedaPage() {
                         </motion.div>
                     ))}
                 </div>
+
+                <div className="flex justify-center mt-16">
+                    <Button
+                        onClick={() => setShowModal(true)}
+                        className="bg-[#127C82] text-white px-6 py-3 rounded-full text-lg hover:bg-[#0F5F66]"
+                    >
+                        Código empresarial
+                    </Button>
+                </div>
+
+                <AnimatePresence>
+                    {showModal && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-40"
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.9, opacity: 0 }}
+                                className="bg-white p-6 rounded-xl shadow-lg w-80 text-center"
+                            >
+                                <h2 className="text-lg font-semibold mb-4">Introduce el código de empresa</h2>
+                                <Input
+                                    value={codigo}
+                                    onChange={(e) => setCodigo(e.target.value)}
+                                    placeholder="3FK3OD"
+                                    className="text-center mb-4 text-[#127C82] font-semibold"
+                                />
+                                <div className="flex justify-between gap-4">
+                                    <button
+                                        onClick={() => setShowModal(false)}
+                                        className="flex-1 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        onClick={() => alert(`Código ingresado: ${codigo}`)}
+                                        className="flex-1 py-2 rounded bg-green-500 text-white hover:bg-green-600"
+                                    >
+                                        Aceptar
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
+
             <footer className="bg-white shadow-inner text-center py-4 text-sm text-gray-500">
                 © {new Date().getFullYear()} GuíaClick - Todos los derechos reservados
             </footer>
         </div>
-
     );
 }
