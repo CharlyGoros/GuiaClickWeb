@@ -88,10 +88,13 @@ export default function Configuracion() {
                 </div>
             </main>
 
+
+
             {/* Footer */}
             <footer className="bg-white shadow-inner text-center py-4 text-sm text-gray-500">
                 © {new Date().getFullYear()} GuíaClick - Todos los derechos reservados
             </footer>
         </div>
+
     );
 }

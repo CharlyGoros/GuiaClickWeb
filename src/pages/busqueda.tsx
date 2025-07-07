@@ -1,3 +1,20 @@
+import algoliasearch from 'algoliasearch/lite';
+import {
+    InstantSearch,
+    SearchBox,
+    Hits,
+} from 'react-instantsearch-dom';
+
+const searchClient = algoliasearch(
+    'P7ILDN8BXE',             // APP ID
+    '211b2e615635e2fbb6695b8196c8b8b4'      // ← API Key
+);
+
+
+import { ManualCard } from "../components/ManualCard";
+
+
+
 // src/pages/BusquedaPage.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "../components/ui/button";
@@ -7,7 +24,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 
 export default function BusquedaPage() {
-    const [query, setQuery] = useState("");
+    const [setQuery] = useState("");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [codigo, setCodigo] = useState("");
@@ -73,38 +90,32 @@ export default function BusquedaPage() {
                     />
                 </div>
 
-                <div className="relative mb-14 max-w-2xl mx-auto">
-                    <Input
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="Buscar manual..."
-                        className="w-full rounded-full px-8 py-5 bg-[#64C1C1] text-white placeholder-white text-lg shadow focus:ring-4 focus:ring-[#90DFDF]"
-                    />
-                    <Search className="absolute right-6 top-1/2 transform -translate-y-1/2 text-white w-6 h-6" />
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {[1, 2, 3, 4, 5, 6].map((item) => (
-                        <motion.div
-                            key={item}
-                            className="flex flex-col bg-white rounded-xl shadow-md p-5 h-full cursor-pointer hover:shadow-lg transition-all"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: item * 0.05 }}
-                            onClick={() => window.location.href = `/manual/${item}`}
-                        >
-                            <div className="w-full h-44 bg-gray-200 rounded mb-4" />
-                            <div>
-                                <div className="text-sm font-semibold bg-[#64C1C1] text-white rounded-full px-3 py-1 inline-block mb-2">
-                                    Título del Manual #{item}
-                                </div>
-                                <p className="text-sm text-gray-700 leading-snug">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. elitassdasdasdasds.
-                                </p>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+
+                <InstantSearch searchClient={searchClient} indexName="manuales_index">
+                    <div className="relative mb-14 max-w-2xl mx-auto">
+                        <SearchBox
+                            className="w-full rounded-full px-55 py-5 bg-[#64C1C1] text-white placeholder-white text-lg shadow focus:ring-4 focus:ring-[#90DFDF]"
+                            translations={{ placeholder: "Buscar manual..." }}
+                        />
+
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <Hits hitComponent={ManualCard} />
+                    </div>
+                </InstantSearch>
+
+
+
+
+
+
+
+
+
+
+
 
                 <div className="flex justify-center mt-16">
                     <Button
