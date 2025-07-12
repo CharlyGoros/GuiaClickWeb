@@ -5,6 +5,8 @@ import Navbar from './components/Navbar';
 import Login from './pages/auth/login';
 import Home from './pages/Home';
 import Register from './pages/auth/registro';
+import { ManualPage } from './pages/manual';
+
 // import Register from './pages/auth/register';
 // import BusquedaPage from './pages/busqueda';
 // import Configuracion from './pages/configuracion';
@@ -22,7 +24,9 @@ const App: React.FC = () => {
         <Route
           path="/"
           element={user ? <Home /> : <Navigate to="/login" replace />}
+
         />
+        <Route path="/manual/:id" element={<ManualPage />} />
 
         {/* No logueado → Login; logueado → Home */}
         <Route
