@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '@/hooks/useAuth';
@@ -26,22 +25,24 @@ const Navbar: React.FC = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     return (
-        <nav className="bg-white shadow px-6 py-5 flex items-center justify-between relative">
+        <nav className="bg-white shadow px-6 py-2 h-[90px] flex items-center justify-between relative">
             <Menu
-                className="w-8 h-8 text-[#127C82] cursor-pointer z-20"
+                className="w-10 h-10 text-[#127C82] cursor-pointer z-20"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
             />
 
-            <Link
-                to="/"
-                className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold text-[#127C82] hover:opacity-80"
+            <div
+                className="absolute left-1/2 transform -translate-x-1/2 text-4xl font-bold text-[#127C82] cursor-pointer select-none hover:opacity-80"
+                onClick={() => navigate("/")}
             >
                 GuíaClick
-            </Link>
+            </div>
 
-            <div className="w-8" />
+            <div className="w-6" />
 
             <AnimatePresence>
                 {isMenuOpen && (
@@ -63,14 +64,6 @@ const Navbar: React.FC = () => {
                                             Configuración
                                         </Link>
                                     </li>
-                                    {/* <li>
-                                        <button
-                                            onClick={() => setShowPopup(true)}
-                                            className="block w-full text-left px-6 py-3 text-base hover:bg-[#f0f0f0]"
-                                        >
-                                            Sección empresas
-                                        </button>
-                                    </li> */}
                                     <li>
                                         <button
                                             onClick={handleLogout}
@@ -105,7 +98,6 @@ const Navbar: React.FC = () => {
                 )}
             </AnimatePresence>
         </nav>
-
     );
 };
 
