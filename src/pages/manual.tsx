@@ -29,7 +29,7 @@ export const ManualPage: React.FC = () => {
     const manualId = Number(id);
     const navigate = useNavigate();
 
-    const currentUserId = 1; // Cambia según tu lógica de auth
+    const currentUserId = 1;
 
     const [manual, setManual] = useState<Manual | null>(null);
     const [steps, setSteps] = useState<ManualStep[]>([]);
@@ -37,7 +37,6 @@ export const ManualPage: React.FC = () => {
     const [isFav, setIsFav] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    // Estados para el modal de nueva opinión
     const [showAddModal, setShowAddModal] = useState(false);
     const [newComment, setNewComment] = useState("");
     const [newScore, setNewScore] = useState(0);
@@ -48,14 +47,10 @@ export const ManualPage: React.FC = () => {
             setLoading(true);
             try {
                 const [mRes, sRes, rRes, fRes] = await Promise.all([
-                    fetch(`http://localhost:3000/.netlify/functions/server/api/manuales/${manualId}`)
-                        .then(r => r.json()),
-                    fetch(`http://localhost:3000/.netlify/functions/server/api/manuals/${manualId}/steps`)
-                        .then(r => r.json()),
-                    fetch(`http://localhost:3000/.netlify/functions/server/api/valoraciones/manuales/${manualId}`)
-                        .then(r => r.json()),
-                    fetch(`http://localhost:3000/.netlify/functions/server/api/users/${currentUserId}/favorites/${manualId}/check`)
-                        .then(r => r.json()),
+                    fetch(`http://localhost:3000/.netlify/functions/server/api/manuales/${manualId}`).then(r => r.json()),
+                    fetch(`http://localhost:3000/.netlify/functions/server/api/manuals/${manualId}/steps`).then(r => r.json()),
+                    fetch(`http://localhost:3000/.netlify/functions/server/api/valoraciones/manuales/${manualId}`).then(r => r.json()),
+                    fetch(`http://localhost:3000/.netlify/functions/server/api/users/${currentUserId}/favorites/${manualId}/check`).then(r => r.json()),
                 ]);
 
                 if (!cancelled) {
@@ -130,62 +125,64 @@ export const ManualPage: React.FC = () => {
         );
     }
 
-    // Separamos mi opinión del resto
     const myRating = ratings.find(r => r.user_id === currentUserId);
     const otherRatings = ratings.filter(r => r.user_id !== currentUserId);
 
     return (
-        <div className="bg-[#EAEAEA] min-h-screen w-[50%] m-auto">
-            {/* AppBar */}
-            <div className="flex items-center bg-white p-4 shadow">
-                <button onClick={() => navigate(-1)}>
-                    <ArrowLeft className="w-6 h-6 text-gray-700" />
-                </button>
-                <h1 className="flex-1 text-center font-semibold text-lg">
-                    {manual.title}
-                </h1>
-                <button onClick={toggleFavorite}>
-                    {isFav
-                        ? <Star className="w-6 h-6 text-yellow-400" />
-                        : <StarOff className="w-6 h-6 text-gray-400" />}
-                </button>
-            </div>
+        <div className="bg-[#EAEAEA] min-h-screen px-4">
+            <div className="w-full max-w-5xl mx-auto py-6 space-y-6">
 
-            <div className="p-4 space-y-6">
+                {/* AppBar */}
+                <div className="flex items-center bg-white p-4 shadow rounded-md">
+                    <button onClick={() => navigate(-1)}>
+                        <ArrowLeft className="w-6 h-6 text-gray-700" />
+                    </button>
+                    <h1 className="flex-1 text-center font-semibold text-lg">
+                        {manual.title}
+                    </h1>
+                    <button onClick={toggleFavorite}>
+                        {isFav
+                            ? <Star className="w-6 h-6 text-yellow-400" />
+                            : <StarOff className="w-6 h-6 text-gray-400" />}
+                    </button>
+                </div>
+
+                {/* Imagen principal */}
                 {manual.image && (
                     <img
                         src={manual.image}
                         alt={manual.title}
-                        className="w-full h-48 object-cover rounded-lg"
+                        className="w-full h-52 object-cover rounded-lg"
                     />
                 )}
 
-                <div className="bg-white rounded-lg p-4">
+                {/* Descripción */}
+                <div className="bg-white rounded-lg p-4 shadow">
                     <p className="text-gray-800">{manual.description}</p>
                 </div>
 
                 {/* Pasos */}
                 <div>
-                    <div className="bg-[#64C1C1] text-white px-4 py-2 rounded-t-lg font-bold">
+                    <div className="bg-[#64C1C1] text-white px-4 py-2 rounded-t-md font-bold">
                         Pasos
                     </div>
-                    <div className="space-y-4">
-                        {steps.map(step => (
+                    <div className="space-y-6 bg-white p-4 rounded-b-md shadow">
+                        {steps.map((step, index) => (
                             <div
                                 key={step.id}
-                                className="bg-[#F7F5FF] rounded-lg overflow-hidden shadow"
+                                className="border-t border-gray-300 pt-4"
                             >
-                                <div className="px-4 py-2 font-semibold">
+                                <p className="font-bold text-base text-gray-800 mb-2">
                                     Paso {step.order}: {step.title}
-                                </div>
+                                </p>
                                 {step.image && (
                                     <img
                                         src={step.image}
                                         alt={step.title}
-                                        className="w-full h-40 object-cover"
+                                        className="w-full h-40 object-cover rounded-md mb-2"
                                     />
                                 )}
-                                <div className="px-4 py-2">{step.description}</div>
+                                <p className="text-gray-700">{step.description}</p>
                             </div>
                         ))}
                     </div>
@@ -225,14 +222,17 @@ export const ManualPage: React.FC = () => {
                     </>
                 )}
 
-                {/* Agregar / Otras opiniones */}
-                <button
-                    onClick={openAddModal}
-                    className="w-full bg-[#64C1C1] text-white py-3 rounded-lg font-semibold"
-                >
-                    + Agregar opinión
-                </button>
+                {/* Botón agregar opinión */}
+                <div className="flex justify-center">
+                    <button
+                        onClick={openAddModal}
+                        className="bg-[#64C1C1] text-white px-5 py-2 rounded-md shadow font-semibold hover:bg-[#50a5a5]"
+                    >
+                        + Agregar opinión
+                    </button>
+                </div>
 
+                {/* Otras opiniones */}
                 {otherRatings.length > 0 && (
                     <>
                         <div className="bg-[#64C1C1] text-white px-4 py-2 rounded-lg font-bold">
@@ -324,4 +324,4 @@ export const ManualPage: React.FC = () => {
             </AnimatePresence>
         </div>
     );
-};
+}
