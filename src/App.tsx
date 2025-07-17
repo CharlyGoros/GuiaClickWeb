@@ -6,7 +6,6 @@ import Login from './pages/auth/login';
 import Home from './pages/Home';
 import Register from './pages/auth/registro';
 import { ManualPage } from './pages/manual';
-import CrearManualPage from './pages/CreateManualPage';
 
 // import Register from './pages/auth/register';
 // import BusquedaPage from './pages/busqueda';
@@ -24,7 +23,7 @@ const App: React.FC = () => {
         {/* Registro */}
         <Route
           path="/"
-          element={user ? <CrearManualPage /> : <Navigate to="/login" replace />}
+          element={user ? <Home /> : <Navigate to="/login" replace />}
 
         />
         <Route path="/manual/:id" element={<ManualPage />} />

@@ -88,7 +88,8 @@ const CrearManualPage: React.FC = () => {
             );
 
             // Enviar todo al backend
-            await axios.post("http://localhost:3000/api/manuals", {
+            await axios.post("http://localhost:3000/.netlify/functions/server/api/manuals", {
+
                 title,
                 description,
                 created_by: 1, // reemplazá por el ID del usuario autenticado
