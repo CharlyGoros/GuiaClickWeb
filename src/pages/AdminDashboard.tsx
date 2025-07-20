@@ -1,109 +1,180 @@
-// src/pages/AdminDashboard.tsx
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 
-export default function AdminDashboard() {
+interface Usuario {
+    id: number;
+    name: string;
+    email: string;
+    role: "Admin" | "User";
+}
+
+interface Manual {
+    id: number;
+    title: string;
+    description: string;
+    image?: string;
+    created_at: string;
+    author: string;
+    step_count: number;
+    favorites_count: number;
+}
+
+export const DashboardPage: React.FC = () => {
+    const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+    const [manuales, setManuales] = useState<Manual[]>([]);
+    const [activeTab, setActiveTab] = useState<"users" | "manuals">("users");
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const [resUsers, resManuals] = await Promise.all([
+                fetch("http://localhost:3000/.netlify/functions/server/api/usuarios").then((res) =>
+                    res.json()
+                ),
+                fetch("http://localhost:3000/.netlify/functions/server/api/manuales-dashboard").then((res) =>
+                    res.json()
+                ),
+            ]);
+            setUsuarios(resUsers.body || []);
+            setManuales(resManuals.body || []);
+        };
+
+        fetchData();
+    }, []);
+
+    const handleDeleteUser = async (id: number) => {
+        if (confirm("¿Eliminar este usuario?")) {
+            await fetch(`http://localhost:3000/.netlify/functions/server/api/usuarios/${id}`, {
+                method: "DELETE",
+            });
+            setUsuarios((prev) => prev.filter((u) => u.id !== id));
+        }
+    };
+
+    const handleDeleteManual = async (id: number) => {
+        if (confirm("¿Eliminar este manual?")) {
+            await fetch(`http://localhost:3000/.netlify/functions/server/api/manuals/${id}`, {
+                method: "DELETE",
+            });
+            setManuales((prev) => prev.filter((m) => m.id !== id));
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-[#F9FBFB] text-[#202020] flex">
-            {/* Sidebar */}
-            <aside className="w-56 bg-white shadow h-full p-6">
-                <h2 className="text-lg font-bold mb-6 text-[#127C82]">Admin Panel</h2>
-                <nav className="space-y-2">
-                    <Link
-                        to="#"
-                        className="flex items-center gap-2 px-4 py-2 rounded bg-[#E5F6F6] text-[#127C82] font-medium"
+        <div className="min-h-screen bg-[#f7fafa] flex">
+            <aside className="w-60 bg-white p-4 shadow-sm">
+                <h2 className="text-lg font-semibold mb-4">Admin Panel</h2>
+                <ul className="space-y-2">
+                    <li
+                        className={`cursor-pointer px-3 py-2 rounded ${activeTab === "users" ? "bg-[#e6f4f4] font-medium" : ""
+                            }`}
+                        onClick={() => setActiveTab("users")}
                     >
-                        <span>👥</span> Users
-                    </Link>
-                    <Link
-                        to="#"
-                        className="flex items-center gap-2 px-4 py-2 rounded hover:bg-[#F1F5F5] text-[#127C82] font-medium"
+                        👤 Users
+                    </li>
+                    <li
+                        className={`cursor-pointer px-3 py-2 rounded ${activeTab === "manuals" ? "bg-[#e6f4f4] font-medium" : ""
+                            }`}
+                        onClick={() => setActiveTab("manuals")}
                     >
-                        <span>📘</span> Manuals
-                    </Link>
-                </nav>
+                        📄 Manuals
+                    </li>
+                </ul>
             </aside>
 
-            {/* Main Panel */}
-            <main className="flex-1 p-10">
-                <h1 className="text-2xl font-bold mb-6 text-[#127C82]">Dashboard</h1>
+            <main className="flex-1 p-6 space-y-6">
+                <h1 className="text-2xl font-bold">Dashboard</h1>
 
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-6 mb-10">
-                    <div className="bg-white rounded shadow p-6">
-                        <p className="text-gray-500">Total Users</p>
-                        <h2 className="text-2xl font-semibold">1,234</h2>
-                    </div>
-                    <div className="bg-white rounded shadow p-6">
-                        <p className="text-gray-500">Active Users</p>
-                        <h2 className="text-2xl font-semibold">987</h2>
-                    </div>
-                </div>
+                {activeTab === "users" && (
+                    <>
+                        <div className="bg-white rounded shadow overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-[#f0f0f0] text-sm text-gray-600">
+                                    <tr>
+                                        <th className="p-3">Name</th>
+                                        <th className="p-3">Email</th>
+                                        <th className="p-3">Role</th>
+                                        <th className="p-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {usuarios.map((u) => (
+                                        <tr key={u.id} className="border-t text-sm">
+                                            <td className="p-3">{u.name}</td>
+                                            <td className="p-3 text-[#38bdf8]">{u.email}</td>
+                                            <td className="p-3">{u.role}</td>
+                                            <td className="p-3">
+                                                <button
+                                                    className="text-red-500 hover:text-red-700"
+                                                    onClick={() => handleDeleteUser(u.id)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
+                )}
 
-                {/* User Table */}
-                <div className="bg-white rounded shadow p-6 mb-10">
-                    <h3 className="text-lg font-semibold mb-4">User Access</h3>
-                    <table className="w-full text-left text-sm">
-                        <thead>
-                            <tr className="border-b">
-                                <th className="py-2">Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[
-                                ["Ethan Harper", "ethan.harper@example.com", "Admin", "Active"],
-                                ["Olivia Bennett", "olivia.bennett@example.com", "Editor", "Active"],
-                                ["Liam Carter", "liam.carter@example.com", "Viewer", "Inactive"],
-                                ["Sophia Davis", "sophia.davis@example.com", "Editor", "Active"],
-                                ["Noah Evans", "noah.evans@example.com", "Viewer", "Active"],
-                            ].map(([name, email, role, status], i) => (
-                                <tr key={i} className="border-t">
-                                    <td className="py-2">{name}</td>
-                                    <td className="text-[#127C82]">{email}</td>
-                                    <td>
-                                        <span className="bg-gray-100 px-2 py-1 rounded text-xs">{role}</span>
-                                    </td>
-                                    <td>
-                                        <span className={`px-2 py-1 rounded text-xs text-white ${status === "Active" ? "bg-green-500" : "bg-gray-400"}`}>
-                                            {status}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Manuals Table */}
-                <div className="bg-white rounded shadow p-6">
-                    <h3 className="text-lg font-semibold mb-4">Manuals</h3>
-                    <table className="w-full text-left text-sm">
-                        <thead>
-                            <tr className="border-b">
-                                <th className="py-2">Title</th>
-                                <th>Version</th>
-                                <th>Last Updated</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {[
-                                ["User Guide", "1.2", "2024-01-15"],
-                                ["Admin Manual", "2.0", "2024-02-20"],
-                                ["Troubleshooting", "1.0", "2023-12-05"],
-                            ].map(([title, version, date], i) => (
-                                <tr key={i} className="border-t">
-                                    <td className="py-2">{title}</td>
-                                    <td className="text-[#127C82]">{version}</td>
-                                    <td className="text-[#127C82]">{date}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                {activeTab === "manuals" && (
+                    <>
+                        <div className="bg-white rounded shadow overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-[#f0f0f0] text-sm text-gray-600">
+                                    <tr>
+                                        <th className="p-3">Imagen</th>
+                                        <th className="p-3">Título</th>
+                                        <th className="p-3">Autor</th>
+                                        <th className="p-3">Fecha</th>
+                                        <th className="p-3">Pasos</th>
+                                        <th className="p-3">Favoritos</th>
+                                        <th className="p-3">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {manuales.map((m) => (
+                                        <tr key={m.id} className="border-t text-sm">
+                                            <td className="p-3">
+                                                {m.image && (
+                                                    <img
+                                                        src={m.image}
+                                                        alt={m.title}
+                                                        className="h-12 w-20 object-cover rounded"
+                                                    />
+                                                )}
+                                            </td>
+                                            <td className="p-3 font-medium">{m.title}</td>
+                                            <td className="p-3">{m.author}</td>
+                                            <td className="p-3">
+                                                {new Date(m.created_at).toLocaleDateString("es-AR")}
+                                            </td>
+                                            <td className="p-3">{m.step_count}</td>
+                                            <td className="p-3">{m.favorites_count}</td>
+                                            <td className="p-3 space-x-2">
+                                                <button
+                                                    className="text-blue-600 hover:underline"
+                                                    onClick={() =>
+                                                        window.location.assign(`/editar-manual/${m.id}`)
+                                                    }
+                                                >
+                                                    Editar
+                                                </button>
+                                                <button
+                                                    className="text-red-500 hover:underline"
+                                                    onClick={() => handleDeleteManual(m.id)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
+                )}
             </main>
         </div>
     );
-}
+};

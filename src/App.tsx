@@ -9,6 +9,7 @@ import CrearManualPage from './pages/CreateManualPage';
 import Favorites from './pages/Favorites';
 import PrivateRoute from './services/PrivateRoute';
 import EditarManualPage from './pages/EditarManualPage';
+import { DashboardPage } from './pages/AdminDashboard';
 
 const App: React.FC = () => {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ const App: React.FC = () => {
         <Route path="/favorites" element={<PrivateRoute element={<Favorites />} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
       </Routes>
     </Router>

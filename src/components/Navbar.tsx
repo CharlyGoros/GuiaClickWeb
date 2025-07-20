@@ -56,10 +56,20 @@ const Navbar: React.FC = () => {
                         <ul className="py-2">
                             {user ? (
                                 <>
+                                    {/* Si es Admin (role === 1) mostramos Dashboard */}
+                                    {user.role === 1 && (
+                                        <li>
+                                            <div
+                                                onClick={() => navigate("/dashboard")}
+                                                className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
+                                            >
+                                                Dashboard
+                                            </div>
+                                        </li>
+                                    )}
                                     <li>
                                         <div
                                             onClick={() => navigate("/favorites")}
-
                                             className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
                                         >
                                             Favoritos
