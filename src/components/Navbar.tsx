@@ -8,12 +8,14 @@ const Navbar: React.FC = () => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
 
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
-    const menuRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -25,8 +27,6 @@ const Navbar: React.FC = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
         <nav className="bg-white shadow px-6 py-2 h-[90px] flex items-center justify-between relative">
@@ -57,12 +57,21 @@ const Navbar: React.FC = () => {
                             {user ? (
                                 <>
                                     <li>
-                                        <Link
-                                            to="/configuracion"
+                                        <div
+                                            onClick={() => navigate("/favorites")}
+
+                                            className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
+                                        >
+                                            Favoritos
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div
+                                            onClick={() => navigate("/settings")}
                                             className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
                                         >
                                             Configuración
-                                        </Link>
+                                        </div>
                                     </li>
                                     <li>
                                         <button

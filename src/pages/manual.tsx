@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Star, StarOff, ArrowLeft, User, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import useAuth from "@/hooks/useAuth";
 
 interface Manual {
     id: number;
@@ -28,8 +29,8 @@ export const ManualPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const manualId = Number(id);
     const navigate = useNavigate();
-
-    const currentUserId = 1;
+    const { user } = useAuth();
+    const currentUserId = user ? user.id : 0;
 
     const [manual, setManual] = useState<Manual | null>(null);
     const [steps, setSteps] = useState<ManualStep[]>([]);
@@ -67,7 +68,7 @@ export const ManualPage: React.FC = () => {
         };
         loadAll();
         return () => { cancelled = true; };
-    }, [manualId]);
+    }, [manualId, currentUserId]);
 
     const toggleFavorite = async () => {
         const url = `http://localhost:3000/.netlify/functions/server/api/users/${currentUserId}/favorites/${manualId}`;
@@ -84,9 +85,10 @@ export const ManualPage: React.FC = () => {
         setRatings(rRes.body);
     };
 
-    const handleDeleteRating = async (ratingId: number) => {
+    const handleDeleteRating = async (manual: number) => {
+        console.log(`Deleting rating ${manual} for user ${currentUserId}`);
         await fetch(
-            `http://localhost:3000/.netlify/functions/server/api/ratings/${currentUserId}/${ratingId}`,
+            `http://localhost:3000/.netlify/functions/server/api/ratings/${currentUserId}/${manual}`,
             { method: "DELETE" }
         );
         reloadRatings();
@@ -213,7 +215,12 @@ export const ManualPage: React.FC = () => {
                                 )}
                             </div>
                             <button
-                                onClick={() => handleDeleteRating(myRating.id)}
+                                onClick={() => {
+                                    if (window.confirm("¿Estás seguro de eliminar tu opinión?")) {
+                                        handleDeleteRating(manualId);
+                                    }
+                                    handleDeleteRating(manualId)
+                                }}
                                 className="ml-4"
                             >
                                 <Trash2 className="w-6 h-6 text-red-500 hover:text-red-700" />
@@ -222,15 +229,16 @@ export const ManualPage: React.FC = () => {
                     </>
                 )}
 
-                {/* Botón agregar opinión */}
-                <div className="flex justify-center">
-                    <button
-                        onClick={openAddModal}
-                        className="bg-[#64C1C1] text-white px-5 py-2 rounded-md shadow font-semibold hover:bg-[#50a5a5]"
-                    >
-                        + Agregar opinión
-                    </button>
-                </div>
+                {!myRating && (
+                    <div className="flex justify-center">
+                        <button
+                            onClick={openAddModal}
+                            className="bg-[#64C1C1] text-white px-5 py-2 rounded-md shadow font-semibold hover:bg-[#50a5a5]"
+                        >
+                            + Agregar opinión
+                        </button>
+                    </div>
+                )}
 
                 {/* Otras opiniones */}
                 {otherRatings.length > 0 && (
