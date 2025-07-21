@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Usuario {
     id: number;
@@ -22,7 +23,7 @@ export const DashboardPage: React.FC = () => {
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [manuales, setManuales] = useState<Manual[]>([]);
     const [activeTab, setActiveTab] = useState<"users" | "manuals">("users");
-
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
             const [resUsers, resManuals] = await Promise.all([
@@ -68,14 +69,14 @@ export const DashboardPage: React.FC = () => {
                             }`}
                         onClick={() => setActiveTab("users")}
                     >
-                        👤 Users
+                        👤 Usuarios
                     </li>
                     <li
                         className={`cursor-pointer px-3 py-2 rounded ${activeTab === "manuals" ? "bg-[#e6f4f4] font-medium" : ""
                             }`}
                         onClick={() => setActiveTab("manuals")}
                     >
-                        📄 Manuals
+                        📄 Manuales
                     </li>
                 </ul>
             </aside>
@@ -84,42 +85,50 @@ export const DashboardPage: React.FC = () => {
                 <h1 className="text-2xl font-bold">Dashboard</h1>
 
                 {activeTab === "users" && (
-                    <>
-                        <div className="bg-white rounded shadow overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-[#f0f0f0] text-sm text-gray-600">
-                                    <tr>
-                                        <th className="p-3">Name</th>
-                                        <th className="p-3">Email</th>
-                                        <th className="p-3">Role</th>
-                                        <th className="p-3">Actions</th>
+                    <div className="bg-white rounded shadow overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-[#f0f0f0] text-sm text-gray-600">
+                                <tr>
+                                    <th className="p-3">Nombre</th>
+                                    <th className="p-3">Email</th>
+                                    <th className="p-3">Rol</th>
+                                    <th className="p-3">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {usuarios.map((u) => (
+                                    <tr key={u.id} className="border-t text-sm">
+                                        <td className="p-3">{u.name}</td>
+                                        <td className="p-3 text-[#38bdf8]">{u.email}</td>
+                                        <td className="p-3">{u.role}</td>
+                                        <td className="p-3">
+                                            <button
+                                                className="text-red-500 hover:text-red-700"
+                                                onClick={() => handleDeleteUser(u.id)}
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {usuarios.map((u) => (
-                                        <tr key={u.id} className="border-t text-sm">
-                                            <td className="p-3">{u.name}</td>
-                                            <td className="p-3 text-[#38bdf8]">{u.email}</td>
-                                            <td className="p-3">{u.role}</td>
-                                            <td className="p-3">
-                                                <button
-                                                    className="text-red-500 hover:text-red-700"
-                                                    onClick={() => handleDeleteUser(u.id)}
-                                                >
-                                                    Eliminar
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 {activeTab === "manuals" && (
                     <>
-                        <div className="bg-white rounded shadow overflow-x-auto">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-xl font-semibold">Manuales</h2>
+                            <button
+                                className="bg-[#127C82] text-white px-4 py-2 rounded hover:bg-[#0e6a70]"
+                                onClick={() => navigate("/crear-manual")}
+                            >
+                                + Crear Manual
+                            </button>
+                        </div>
+
+                        <div className="bg-white rounded shadow overflow-x-auto mt-4">
                             <table className="w-full text-left">
                                 <thead className="bg-[#f0f0f0] text-sm text-gray-600">
                                     <tr>
@@ -154,9 +163,7 @@ export const DashboardPage: React.FC = () => {
                                             <td className="p-3 space-x-2">
                                                 <button
                                                     className="text-blue-600 hover:underline"
-                                                    onClick={() =>
-                                                        window.location.assign(`/editar-manual/${m.id}`)
-                                                    }
+                                                    onClick={() => navigate(`/editar-manual/${m.id}`)}
                                                 >
                                                     Editar
                                                 </button>
