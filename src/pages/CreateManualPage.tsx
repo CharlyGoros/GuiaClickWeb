@@ -1,7 +1,5 @@
 import React, { useState, ChangeEvent } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import useAuth from "@/hooks/useAuth";
 
 interface StepData {
     order: number;
@@ -12,6 +10,7 @@ interface StepData {
 
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/ddnjtzlim/image/upload";
 const UPLOAD_PRESET = "presettest";
+
 const CrearManualPage: React.FC = () => {
     const [title, setTitle] = useState<string>("");
     const [description, setDescription] = useState<string>("");
@@ -62,20 +61,15 @@ const CrearManualPage: React.FC = () => {
         return response.data.secure_url;
     };
 
-    const navigate = useNavigate();
-
-    const { user } = useAuth();
     const handleSubmit = async () => {
         try {
             setIsUploading(true);
 
-            // Subir imagen principal del manual
             let manualImageUrl: string | null = null;
             if (image) {
                 manualImageUrl = await uploadImageToCloudinary(image);
             }
 
-            // Subir imágenes de pasos
             const processedSteps = await Promise.all(
                 steps.map(async (step) => {
                     let stepImageUrl: string | null = null;
@@ -91,22 +85,17 @@ const CrearManualPage: React.FC = () => {
                 })
             );
 
-            // Enviar todo al backend
             await axios.post("http://localhost:3000/.netlify/functions/server/api/manuals", {
-
                 title,
                 description,
-                created_by:
-                    user?.id, // reemplazá por el ID del usuario autenticado
+                created_by: 1,
                 public: true,
                 image: manualImageUrl,
                 steps: processedSteps
             });
 
             alert("Manual creado correctamente");
-            navigate("/"); // ⬅️ esto redirige al Home
 
-            // Resetear formulario
             setTitle("");
             setDescription("");
             setImage(null);
@@ -138,14 +127,24 @@ const CrearManualPage: React.FC = () => {
             />
 
             <div className="mb-4">
-                <label className="block font-semibold mb-1">Imagen principal:</label>
-                <input type="file" onChange={handleManualImageChange} />
+                <label className="block font-semibold mb-2">Imagen principal:</label>
+                <div className="flex items-center gap-4">
+                    <label className="bg-[#127C82] text-white px-4 py-2 rounded cursor-pointer hover:bg-[#0e6a70]">
+                        Seleccionar archivo
+                        <input
+                            type="file"
+                            className="hidden"
+                            onChange={handleManualImageChange}
+                        />
+                    </label>
+                    {image && <span className="text-sm">{image.name}</span>}
+                </div>
             </div>
 
             <h2 className="text-xl font-semibold mt-6 mb-2">Pasos</h2>
             {steps.map((step, index) => (
                 <div key={index} className="border p-4 mb-4 rounded shadow-sm">
-                    <p className="font-semibold">Paso {index + 1}</p>
+                    <p className="font-semibold mb-2">Paso {index + 1}</p>
                     <input
                         className="w-full p-2 border rounded mb-2"
                         placeholder="Título del paso"
@@ -158,29 +157,38 @@ const CrearManualPage: React.FC = () => {
                         value={step.description}
                         onChange={(e) => handleStepChange(index, "description", e.target.value)}
                     />
-                    <input
-                        type="file"
-                        onChange={(e) =>
-                            e.target.files?.[0] && handleStepImageChange(index, e.target.files[0])
-                        }
-                    />
+                    <div className="flex items-center gap-4 mt-2">
+                        <label className="bg-[#127C82] text-white px-4 py-2 rounded cursor-pointer hover:bg-[#0e6a70]">
+                            Seleccionar archivo
+                            <input
+                                type="file"
+                                className="hidden"
+                                onChange={(e) =>
+                                    e.target.files?.[0] && handleStepImageChange(index, e.target.files[0])
+                                }
+                            />
+                        </label>
+                        {step.image && <span className="text-sm">{step.image.name}</span>}
+                    </div>
                 </div>
             ))}
 
-            <button
-                className="bg-gray-500 text-white px-4 py-2 rounded mb-4"
-                onClick={addStep}
-            >
-                Agregar Paso
-            </button>
+            <div className="flex gap-4 mt-6">
+                <button
+                    className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                    onClick={addStep}
+                >
+                    Agregar Paso
+                </button>
 
-            <button
-                className="bg-blue-600 text-white px-6 py-2 rounded"
-                onClick={handleSubmit}
-                disabled={isUploading}
-            >
-                {isUploading ? "Subiendo..." : "Crear Manual"}
-            </button>
+                <button
+                    className="bg-[#127C82] text-white px-6 py-2 rounded hover:bg-[#0e6a70]"
+                    onClick={handleSubmit}
+                    disabled={isUploading}
+                >
+                    {isUploading ? "Subiendo..." : "Crear Manual"}
+                </button>
+            </div>
         </div>
     );
 };

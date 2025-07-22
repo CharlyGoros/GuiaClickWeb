@@ -24,6 +24,7 @@ export const DashboardPage: React.FC = () => {
     const [manuales, setManuales] = useState<Manual[]>([]);
     const [activeTab, setActiveTab] = useState<"users" | "manuals">("users");
     const navigate = useNavigate();
+
     useEffect(() => {
         const fetchData = async () => {
             const [resUsers, resManuals] = await Promise.all([
@@ -65,15 +66,13 @@ export const DashboardPage: React.FC = () => {
                 <h2 className="text-lg font-semibold mb-4">Admin Panel</h2>
                 <ul className="space-y-2">
                     <li
-                        className={`cursor-pointer px-3 py-2 rounded ${activeTab === "users" ? "bg-[#e6f4f4] font-medium" : ""
-                            }`}
+                        className={`cursor-pointer px-3 py-2 rounded ${activeTab === "users" ? "bg-[#e6f4f4] font-medium" : ""}`}
                         onClick={() => setActiveTab("users")}
                     >
                         👤 Usuarios
                     </li>
                     <li
-                        className={`cursor-pointer px-3 py-2 rounded ${activeTab === "manuals" ? "bg-[#e6f4f4] font-medium" : ""
-                            }`}
+                        className={`cursor-pointer px-3 py-2 rounded ${activeTab === "manuals" ? "bg-[#e6f4f4] font-medium" : ""}`}
                         onClick={() => setActiveTab("manuals")}
                     >
                         📄 Manuales
@@ -102,12 +101,14 @@ export const DashboardPage: React.FC = () => {
                                         <td className="p-3 text-[#38bdf8]">{u.email}</td>
                                         <td className="p-3">{u.role}</td>
                                         <td className="p-3">
-                                            <button
-                                                className="text-red-500 hover:text-red-700"
-                                                onClick={() => handleDeleteUser(u.id)}
-                                            >
-                                                Eliminar
-                                            </button>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                                    onClick={() => handleDeleteUser(u.id)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -160,19 +161,21 @@ export const DashboardPage: React.FC = () => {
                                             </td>
                                             <td className="p-3">{m.step_count}</td>
                                             <td className="p-3">{m.favorites_count}</td>
-                                            <td className="p-3 space-x-2">
-                                                <button
-                                                    className="text-blue-600 hover:underline"
-                                                    onClick={() => navigate(`/editar-manual/${m.id}`)}
-                                                >
-                                                    Editar
-                                                </button>
-                                                <button
-                                                    className="text-red-500 hover:underline"
-                                                    onClick={() => handleDeleteManual(m.id)}
-                                                >
-                                                    Eliminar
-                                                </button>
+                                            <td className="p-3">
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        className="bg-[#127C82] text-white px-3 py-1 rounded hover:bg-[#0e6a70]"
+                                                        onClick={() => navigate(`/editar-manual/${m.id}`)}
+                                                    >
+                                                        Editar
+                                                    </button>
+                                                    <button
+                                                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                                        onClick={() => handleDeleteManual(m.id)}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
