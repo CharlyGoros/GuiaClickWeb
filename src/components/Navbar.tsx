@@ -60,7 +60,7 @@ const Navbar: React.FC = () => {
                                     {user.role === 1 && (
                                         <li>
                                             <div
-                                                onClick={() => navigate("/dashboard")}
+                                                onClick={() => { navigate("/dashboard"); setIsMenuOpen(false); }}
                                                 className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
                                             >
                                                 Dashboard
@@ -69,7 +69,7 @@ const Navbar: React.FC = () => {
                                     )}
                                     <li>
                                         <div
-                                            onClick={() => navigate("/favorites")}
+                                            onClick={() => { navigate("/favorites"); setIsMenuOpen(false); }}
                                             className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
                                         >
                                             Favoritos
