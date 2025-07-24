@@ -142,7 +142,7 @@ const EditarManualPage: React.FC = () => {
 
             await axios.put(`http://localhost:3000/.netlify/functions/server/api/manuals/${id}`, payload);
             alert("Manual actualizado correctamente");
-            navigate("/");
+            navigate("/dashboard");
         } catch (err) {
             console.error("Error actualizando manual:", err);
             alert("Error al actualizar el manual");
@@ -158,23 +158,38 @@ const EditarManualPage: React.FC = () => {
             <h1 className="text-2xl font-bold mb-4">Editar Manual</h1>
 
             <input
-                className="w-full p-2 border mb-2"
+                className="w-full p-2 border rounded mb-2"
                 placeholder="Título"
                 value={manual.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
             />
+
             <textarea
-                className="w-full p-2 border mb-2"
+                className="w-full p-2 border rounded mb-2"
                 placeholder="Descripción"
                 value={manual.description}
                 onChange={(e) => handleInputChange("description", e.target.value)}
             />
+
             <div className="mb-4">
-                <label className="block font-semibold mb-1">Imagen principal:</label>
-                <input
-                    type="file"
-                    onChange={(e) => e.target.files?.[0] && handleManualImageChange(e.target.files[0])}
-                />
+                <label className="block font-semibold mb-2">Imagen principal:</label>
+                <div className="flex items-center gap-4 mb-2">
+                    <label className="bg-[#127C82] text-white px-4 py-2 rounded cursor-pointer hover:bg-[#0e6a70]">
+                        Seleccionar archivo
+                        <input
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleManualImageChange(e.target.files[0])}
+                        />
+                    </label>
+                    <span className="text-sm max-w-[300px] truncate">
+                        {manual.image instanceof File
+                            ? manual.image.name
+                            : typeof manual.image === "string"
+                                ? manual.image.split("/").pop()?.split("?")[0]
+                                : ""}
+                    </span>
+                </div>
                 {manual.image && (
                     <img
                         src={manual.image instanceof File ? URL.createObjectURL(manual.image) : manual.image}
@@ -196,25 +211,38 @@ const EditarManualPage: React.FC = () => {
             <h2 className="text-lg font-semibold mt-6 mb-2">Pasos</h2>
             {manual.steps.map((step, index) => (
                 <div key={index} className="border p-4 rounded mb-4">
-                    <p className="font-bold">Paso {index + 1}</p>
+                    <p className="font-bold mb-2">Paso {index + 1}</p>
                     <input
-                        className="w-full p-2 border mb-2"
+                        className="w-full p-2 border rounded mb-2"
                         placeholder="Título del paso"
                         value={step.title}
                         onChange={(e) => handleStepChange(index, "title", e.target.value)}
                     />
                     <textarea
-                        className="w-full p-2 border mb-2"
+                        className="w-full p-2 border rounded mb-2"
                         placeholder="Descripción del paso"
                         value={step.description}
                         onChange={(e) => handleStepChange(index, "description", e.target.value)}
                     />
-                    <input
-                        type="file"
-                        onChange={(e) =>
-                            e.target.files?.[0] && handleStepImageChange(index, e.target.files[0])
-                        }
-                    />
+                    <div className="flex items-center gap-4 mb-2">
+                        <label className="bg-[#127C82] text-white px-4 py-2 rounded cursor-pointer hover:bg-[#0e6a70]">
+                            Seleccionar archivo
+                            <input
+                                type="file"
+                                className="hidden"
+                                onChange={(e) =>
+                                    e.target.files?.[0] && handleStepImageChange(index, e.target.files[0])
+                                }
+                            />
+                        </label>
+                        <span className="text-sm max-w-[300px] truncate">
+                            {step.image instanceof File
+                                ? step.image.name
+                                : typeof step.image === "string"
+                                    ? step.image.split("/").pop()?.split("?")[0]
+                                    : ""}
+                        </span>
+                    </div>
                     {step.image && (
                         <img
                             src={step.image instanceof File ? URL.createObjectURL(step.image) : step.image}
@@ -225,20 +253,21 @@ const EditarManualPage: React.FC = () => {
                 </div>
             ))}
 
-            <button
-                className="bg-gray-600 text-white px-4 py-2 rounded mt-2"
-                onClick={addStep}
-            >
-                Agregar Paso
-            </button>
-
-            <button
-                className="bg-blue-600 text-white px-6 py-2 rounded mt-4"
-                onClick={handleSubmit}
-                disabled={loading}
-            >
-                {loading ? "Guardando..." : "Guardar Cambios"}
-            </button>
+            <div className="flex gap-4 mt-6">
+                <button
+                    className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                    onClick={addStep}
+                >
+                    Agregar Paso
+                </button>
+                <button
+                    className="bg-[#127C82] text-white px-6 py-2 rounded hover:bg-[#0e6a70]"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                >
+                    {loading ? "Guardando..." : "Guardar Cambios"}
+                </button>
+            </div>
         </div>
     );
 };

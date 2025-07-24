@@ -75,14 +75,7 @@ const Navbar: React.FC = () => {
                                             Favoritos
                                         </div>
                                     </li>
-                                    <li>
-                                        <div
-                                            onClick={() => navigate("/settings")}
-                                            className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
-                                        >
-                                            Configuración
-                                        </div>
-                                    </li>
+
                                     <li>
                                         <button
                                             onClick={handleLogout}
