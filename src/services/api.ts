@@ -14,7 +14,7 @@ export interface LoginResponseData {
 // const API_BASE_URL: string =
 //   'https://api-pdd.netlify.app/.netlify/functions/server/';
 const API_BASE_URL: string =
-  'https://guiaclick.netlify.app/.netlify/functions/server';
+  'http://localhost:3000/.netlify/functions/server';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

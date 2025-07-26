@@ -1,18 +1,21 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
 import Navbar from './components/Navbar';
+
 import Login from './pages/Auth/login';
-import Home from './pages/Home';
 import Register from './pages/Auth/registro';
+import Home from './pages/Home';
 import { ManualPage } from './pages/manual';
 import CrearManualPage from './pages/CreateManualPage';
+import EditarManualPage from './pages/EditarManualPage';
 import Favorites from './pages/Favorites';
 import PrivateRoute from './services/PrivateRoute';
-import EditarManualPage from './pages/EditarManualPage';
-import { DashboardPage } from './pages/AdminDashboard';
 import CrearEmpresa from './pages/CrearEmpresa';
 import EmpresaEditarPage from './pages/EditarEmpresaPage';
 import SuperadminEmpresas from './pages/SuperAdminEmpresas';
+import UsersListPage from './pages/UserListPage';
+import ManualsListPage from './pages/ManualListPage';
+import DashboardEmpresasPage from './pages/DashboardEmpresas';
 
 const App: React.FC = () => {
   const { user } = useAuth();
@@ -22,18 +25,32 @@ const App: React.FC = () => {
       {user && <Navbar />}
 
       <Routes>
-        <Route path="/editar-manual/:id" element={<PrivateRoute element={<EditarManualPage />} />} />
-        <Route path="/" element={<PrivateRoute element={<Home />} />} />
+        {/* Public routes */}
+        <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
+        <Route path="/registro" element={!user ? <Register /> : <Navigate to="/" replace />} />
         <Route path="/manual/:id" element={<ManualPage />} />
-        <Route path="/crear-manual" element={<PrivateRoute element={<CrearManualPage />} />} />
+
+        {/* Protected routes */}
+        <Route path="/" element={<PrivateRoute element={<Home />} />} />
         <Route path="/favorites" element={<PrivateRoute element={<Favorites />} />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
+        <Route path="/crear-manual" element={<PrivateRoute element={<CrearManualPage />} />} />
+        <Route path="/editar-manual/:id" element={<PrivateRoute element={<EditarManualPage />} />} />
+
+        {/* Empresa management */}
         <Route path="/crear-empresa" element={<PrivateRoute element={<CrearEmpresa />} />} />
         <Route path="/editar-empresa" element={<PrivateRoute element={<EmpresaEditarPage />} />} />
+
+        {/* Dashboard sub-routes */}
+        <Route path="/dashboard/users" element={<PrivateRoute element={<UsersListPage />} />} />
+        <Route path="/dashboard/manuals" element={<PrivateRoute element={<ManualsListPage />} />} />
+        <Route path="/dashboard/empresas" element={<PrivateRoute element={<DashboardEmpresasPage />} />} />
+        <Route path="/dashboard" element={<Navigate to="/dashboard/users" replace />} />
+
+        {/* Legacy superadmin route */}
         <Route path="/editar-empresa-admin" element={<PrivateRoute element={<SuperadminEmpresas />} />} />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
       </Routes>
     </Router>
   );

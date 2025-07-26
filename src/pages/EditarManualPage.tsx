@@ -33,8 +33,8 @@ const EditarManualPage: React.FC = () => {
             setLoading(true);
             try {
                 const [manualRes, stepsRes] = await Promise.all([
-                    axios.get(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuales/${id}`),
-                    axios.get(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuals/${id}/steps`)
+                    axios.get(`http://localhost:3000/.netlify/functions/server/api/manuales/${id}`),
+                    axios.get(`http://localhost:3000/.netlify/functions/server/api/manuals/${id}/steps`)
                 ]);
 
                 const manualData = manualRes.data.body;
@@ -72,16 +72,16 @@ const EditarManualPage: React.FC = () => {
 
     const handleStepChange = (index: number, field: keyof Step, value: string) => {
         if (!manual) return;
-        const updatedSteps = [...manual.steps];
-        updatedSteps[index] = { ...updatedSteps[index], [field]: value };
-        setManual({ ...manual, steps: updatedSteps });
+        const updated = [...manual.steps];
+        updated[index] = { ...updated[index], [field]: value };
+        setManual({ ...manual, steps: updated });
     };
 
     const handleStepImageChange = (index: number, file: File) => {
         if (!manual) return;
-        const updatedSteps = [...manual.steps];
-        updatedSteps[index].image = file;
-        setManual({ ...manual, steps: updatedSteps });
+        const updated = [...manual.steps];
+        updated[index].image = file;
+        setManual({ ...manual, steps: updated });
     };
 
     const handleManualImageChange = (file: File) => {
@@ -108,8 +108,18 @@ const EditarManualPage: React.FC = () => {
         return res.data.secure_url;
     };
 
+    const isFormValid = Boolean(
+        manual &&
+        manual.title.trim() !== "" &&
+        manual.description.trim() !== "" &&
+        manual.steps.every(s => s.title.trim() !== "" && s.description.trim() !== "")
+    );
+
     const handleSubmit = async () => {
-        if (!manual) return;
+        if (!manual || !isFormValid) {
+            alert("Por favor completa todos los campos requeridos");
+            return;
+        }
         setLoading(true);
         try {
             let manualImageUrl = manual.image;
@@ -140,9 +150,12 @@ const EditarManualPage: React.FC = () => {
                 steps: processedSteps
             };
 
-            await axios.put(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuals/${id}`, payload);
+            await axios.put(
+                `http://localhost:3000/.netlify/functions/server/api/manuals/${id}`,
+                payload
+            );
             alert("Manual actualizado correctamente");
-            navigate("/dashboard");
+            navigate("/dashboard/users");
         } catch (err) {
             console.error("Error actualizando manual:", err);
             alert("Error al actualizar el manual");
@@ -158,6 +171,7 @@ const EditarManualPage: React.FC = () => {
             <h1 className="text-2xl font-bold mb-4">Editar Manual</h1>
 
             <input
+                required
                 className="w-full p-2 border rounded mb-2"
                 placeholder="Título"
                 value={manual.title}
@@ -165,6 +179,7 @@ const EditarManualPage: React.FC = () => {
             />
 
             <textarea
+                required
                 className="w-full p-2 border rounded mb-2"
                 placeholder="Descripción"
                 value={manual.description}
@@ -192,7 +207,7 @@ const EditarManualPage: React.FC = () => {
                 </div>
                 {manual.image && (
                     <img
-                        src={manual.image instanceof File ? URL.createObjectURL(manual.image) : manual.image}
+                        src={manual.image instanceof File ? URL.createObjectURL(manual.image) : (manual.image as string)}
                         alt="Preview principal"
                         className="mt-2 w-full max-h-48 object-cover rounded"
                     />
@@ -204,7 +219,7 @@ const EditarManualPage: React.FC = () => {
                     type="checkbox"
                     checked={manual.public}
                     onChange={(e) => handleInputChange("public", e.target.checked)}
-                />{" "}
+                />{' '}
                 Manual público
             </label>
 
@@ -213,12 +228,14 @@ const EditarManualPage: React.FC = () => {
                 <div key={index} className="border p-4 rounded mb-4">
                     <p className="font-bold mb-2">Paso {index + 1}</p>
                     <input
+                        required
                         className="w-full p-2 border rounded mb-2"
                         placeholder="Título del paso"
                         value={step.title}
                         onChange={(e) => handleStepChange(index, "title", e.target.value)}
                     />
                     <textarea
+                        required
                         className="w-full p-2 border rounded mb-2"
                         placeholder="Descripción del paso"
                         value={step.description}
@@ -231,7 +248,8 @@ const EditarManualPage: React.FC = () => {
                                 type="file"
                                 className="hidden"
                                 onChange={(e) =>
-                                    e.target.files?.[0] && handleStepImageChange(index, e.target.files[0])
+                                    e.target.files?.[0] &&
+                                    handleStepImageChange(index, e.target.files[0])
                                 }
                             />
                         </label>
@@ -245,7 +263,7 @@ const EditarManualPage: React.FC = () => {
                     </div>
                     {step.image && (
                         <img
-                            src={step.image instanceof File ? URL.createObjectURL(step.image) : step.image}
+                            src={step.image instanceof File ? URL.createObjectURL(step.image) : (step.image as string)}
                             alt={`Preview paso ${index + 1}`}
                             className="mt-2 w-full max-h-48 object-cover rounded"
                         />
@@ -255,15 +273,16 @@ const EditarManualPage: React.FC = () => {
 
             <div className="flex gap-4 mt-6">
                 <button
+                    type="button"
                     className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
                     onClick={addStep}
                 >
                     Agregar Paso
                 </button>
                 <button
-                    className="bg-[#127C82] text-white px-6 py-2 rounded hover:bg-[#0e6a70]"
+                    className="bg-[#127C82] text-white px-6 py-2 rounded hover:bg-[#0e6a70] disabled:opacity-50"
                     onClick={handleSubmit}
-                    disabled={loading}
+                    disabled={!isFormValid || loading}
                 >
                     {loading ? "Guardando..." : "Guardar Cambios"}
                 </button>

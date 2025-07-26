@@ -26,7 +26,7 @@ const SuperadminEmpresas: React.FC = () => {
     }, [user, navigate]);
 
     useEffect(() => {
-        fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/companies`)
+        fetch(`http://localhost:3000/.netlify/functions/server/api/companies`)
             .then((res) => res.json())
             .then((data) => setCompanies(data.body))
             .catch(console.error);
@@ -41,7 +41,7 @@ const SuperadminEmpresas: React.FC = () => {
     const handleSave = async () => {
         if (!selected) return;
         try {
-            const response = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/companies/${selected.id}`, {
+            const response = await fetch(`http://localhost:3000/.netlify/functions/server/api/companies/${selected.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: newName }),
@@ -61,7 +61,7 @@ const SuperadminEmpresas: React.FC = () => {
     const handleGenerarCodigo = async () => {
         if (!selected) return;
         try {
-            const response = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/access-codes`, {
+            const response = await fetch(`http://localhost:3000/.netlify/functions/server/api/access-codes`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ company_id: selected.id }),
@@ -77,7 +77,17 @@ const SuperadminEmpresas: React.FC = () => {
     return (
         <div className="max-w-3xl mx-auto py-10 px-4">
             <h1 className="text-2xl font-bold text-center mb-6">Administrador de Empresas</h1>
-
+            {/* Crear Empresa visible para admin y superadmin */}
+            {(user?.role == -1) && (
+                <li>
+                    <div
+                        onClick={() => { navigate("/crear-empresa"); }}
+                        className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
+                    >
+                        Crear Empresa
+                    </div>
+                </li>
+            )}
             {!selected ? (
                 <div className="space-y-3">
                     {companies.map((empresa) => (

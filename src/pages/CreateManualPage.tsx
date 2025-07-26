@@ -1,5 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import axios from "axios";
+import useAuth from "@/hooks/useAuth";
 
 interface StepData {
     order: number;
@@ -12,6 +13,8 @@ const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/ddnjtzlim/image/upload";
 const UPLOAD_PRESET = "presettest";
 
 const CrearManualPage: React.FC = () => {
+    const { user } = useAuth();
+
     const [title, setTitle] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [image, setImage] = useState<File | null>(null);
@@ -19,6 +22,13 @@ const CrearManualPage: React.FC = () => {
         { order: 1, title: "", description: "", image: null }
     ]);
     const [isUploading, setIsUploading] = useState<boolean>(false);
+    const [isGlobalManual, setIsGlobalManual] = useState<boolean>(false);
+
+    // Validate required fields
+    const isFormValid =
+        title.trim().length > 0 &&
+        description.trim().length > 0 &&
+        steps.every(s => s.title.trim().length > 0 && s.description.trim().length > 0);
 
     const handleManualImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -31,75 +41,84 @@ const CrearManualPage: React.FC = () => {
         field: K,
         value: StepData[K]
     ) => {
-        const updatedSteps = [...steps];
-        updatedSteps[index] = {
-            ...updatedSteps[index],
-            [field]: value
-        };
-        setSteps(updatedSteps);
+        const updated = [...steps];
+        updated[index] = { ...updated[index], [field]: value };
+        setSteps(updated);
     };
 
     const handleStepImageChange = (index: number, file: File) => {
-        const updatedSteps = [...steps];
-        updatedSteps[index].image = file;
-        setSteps(updatedSteps);
+        const updated = [...steps];
+        updated[index].image = file;
+        setSteps(updated);
     };
 
     const addStep = () => {
-        setSteps([
-            ...steps,
-            { order: steps.length + 1, title: "", description: "", image: null }
+        setSteps(prev => [
+            ...prev,
+            { order: prev.length + 1, title: "", description: "", image: null }
         ]);
     };
 
-    const uploadImageToCloudinary = async (file: File): Promise<string> => {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", UPLOAD_PRESET);
+    // New: remove a step by index
+    const removeStep = (index: number) => {
+        setSteps(prev => {
+            const filtered = prev.filter((_, i) => i !== index);
+            // Reassign order
+            return filtered.map((step, idx) => ({ ...step, order: idx + 1 }));
+        });
+    };
 
-        const response = await axios.post(CLOUDINARY_URL, formData);
-        return response.data.secure_url;
+    const uploadImageToCloudinary = async (file: File): Promise<string> => {
+        const form = new FormData();
+        form.append("file", file);
+        form.append("upload_preset", UPLOAD_PRESET);
+        const res = await axios.post(CLOUDINARY_URL, form);
+        return res.data.secure_url;
     };
 
     const handleSubmit = async () => {
+        if (!isFormValid) return;
+        setIsUploading(true);
         try {
-            setIsUploading(true);
+            let manualUrl: string | null = null;
+            if (image) manualUrl = await uploadImageToCloudinary(image);
 
-            let manualImageUrl: string | null = null;
-            if (image) {
-                manualImageUrl = await uploadImageToCloudinary(image);
-            }
-
-            const processedSteps = await Promise.all(
-                steps.map(async (step) => {
-                    let stepImageUrl: string | null = null;
-                    if (step.image) {
-                        stepImageUrl = await uploadImageToCloudinary(step.image);
-                    }
+            const processed = await Promise.all(
+                steps.map(async step => {
+                    let url: string | null = null;
+                    if (step.image) url = await uploadImageToCloudinary(step.image);
                     return {
                         order: step.order,
                         title: step.title,
                         description: step.description,
-                        image: stepImageUrl
+                        image: url
                     };
                 })
             );
 
-            await axios.post("https://guiaclick.netlify.app/.netlify/functions/server/api/manuals", {
+            const payload = {
                 title,
                 description,
-                created_by: 1,
+                created_by: user?.id ?? 1,
                 public: true,
-                image: manualImageUrl,
-                steps: processedSteps
-            });
+                image: manualUrl,
+                steps: processed,
+                company_id:
+                    user?.role === 1 && user?.company_id && !isGlobalManual
+                        ? user.company_id
+                        : null
+            };
 
+            await axios.post(
+                "http://localhost:3000/.netlify/functions/server/api/manuals",
+                payload
+            );
             alert("Manual creado correctamente");
-
             setTitle("");
             setDescription("");
             setImage(null);
             setSteps([{ order: 1, title: "", description: "", image: null }]);
+            setIsGlobalManual(false);
         } catch (error) {
             console.error(error);
             alert("Error al crear el manual.");
@@ -113,17 +132,19 @@ const CrearManualPage: React.FC = () => {
             <h1 className="text-2xl font-bold mb-4">Crear Nuevo Manual</h1>
 
             <input
+                required
                 className="w-full p-2 border rounded mb-2"
                 placeholder="Título del manual"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={e => setTitle(e.target.value)}
             />
 
             <textarea
+                required
                 className="w-full p-2 border rounded mb-2"
                 placeholder="Descripción"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={e => setDescription(e.target.value)}
             />
 
             <div className="mb-4">
@@ -141,21 +162,50 @@ const CrearManualPage: React.FC = () => {
                 </div>
             </div>
 
-            <h2 className="text-xl font-semibold mt-6 mb-2">Pasos</h2>
-            {steps.map((step, index) => (
-                <div key={index} className="border p-4 mb-4 rounded shadow-sm">
-                    <p className="font-semibold mb-2">Paso {index + 1}</p>
+            {user?.role === 1 && user?.company_id && (
+                <div className="mb-4 flex items-center gap-2">
                     <input
+                        type="checkbox"
+                        id="manual-global"
+                        checked={isGlobalManual}
+                        onChange={e => setIsGlobalManual(e.target.checked)}
+                        className="accent-[#127C82] w-4 h-4"
+                    />
+                    <label htmlFor="manual-global" className="text-sm text-gray-800">
+                        Hacer este manual global (no estará asociado a tu empresa)
+                    </label>
+                </div>
+            )}
+
+            <h2 className="text-xl font-semibold mt-6 mb-2">Pasos</h2>
+            {steps.map((step, idx) => (
+                <div key={idx} className="border p-4 mb-4 rounded shadow-sm">
+                    <div className="flex justify-between items-center">
+                        <p className="font-semibold">Paso {idx + 1}</p>
+                        {/* Delete step button */}
+                        {steps.length > 1 && (
+                            <button
+                                type="button"
+                                onClick={() => removeStep(idx)}
+                                className="text-red-500 hover:text-red-700 text-sm"
+                            >
+                                Eliminar
+                            </button>
+                        )}
+                    </div>
+                    <input
+                        required
                         className="w-full p-2 border rounded mb-2"
                         placeholder="Título del paso"
                         value={step.title}
-                        onChange={(e) => handleStepChange(index, "title", e.target.value)}
+                        onChange={e => handleStepChange(idx, 'title', e.target.value)}
                     />
                     <textarea
+                        required
                         className="w-full p-2 border rounded mb-2"
                         placeholder="Descripción del paso"
                         value={step.description}
-                        onChange={(e) => handleStepChange(index, "description", e.target.value)}
+                        onChange={e => handleStepChange(idx, 'description', e.target.value)}
                     />
                     <div className="flex items-center gap-4 mt-2">
                         <label className="bg-[#127C82] text-white px-4 py-2 rounded cursor-pointer hover:bg-[#0e6a70]">
@@ -163,8 +213,9 @@ const CrearManualPage: React.FC = () => {
                             <input
                                 type="file"
                                 className="hidden"
-                                onChange={(e) =>
-                                    e.target.files?.[0] && handleStepImageChange(index, e.target.files[0])
+                                onChange={e =>
+                                    e.target.files?.[0] &&
+                                    handleStepImageChange(idx, e.target.files[0])
                                 }
                             />
                         </label>
@@ -177,14 +228,15 @@ const CrearManualPage: React.FC = () => {
                 <button
                     className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
                     onClick={addStep}
+                    type="button"
                 >
                     Agregar Paso
                 </button>
 
                 <button
-                    className="bg-[#127C82] text-white px-6 py-2 rounded hover:bg-[#0e6a70]"
+                    className="bg-[#127C82] text-white px-6 py-2 rounded hover:bg-[#0e6a70] disabled:opacity-50"
                     onClick={handleSubmit}
-                    disabled={isUploading}
+                    disabled={!isFormValid || isUploading}
                 >
                     {isUploading ? "Subiendo..." : "Crear Manual"}
                 </button>

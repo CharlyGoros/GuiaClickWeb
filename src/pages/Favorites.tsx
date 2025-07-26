@@ -16,6 +16,7 @@ const INDEX_NAME = "movies_index";
 const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_SEARCH_KEY);
 const index = searchClient.initIndex(INDEX_NAME);
 
+
 export interface Manual {
     objectID: string;
     title: string;
@@ -23,7 +24,9 @@ export interface Manual {
     image?: string;
     company_id?: number | null;
     company_name?: string | null;
+    step_count: number;
 }
+
 
 interface FavoriteManual {
     id: number;
@@ -32,6 +35,8 @@ interface FavoriteManual {
     image?: string;
     company_id?: number | null;
     company_name?: string | null;
+
+    step_count: number;
 }
 
 const Favorites: React.FC = () => {
@@ -56,7 +61,7 @@ const Favorites: React.FC = () => {
         if (!codigoEmpresa || !user?.id) return;
 
         try {
-            const response = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/users/${user.id}/company`, {
+            const response = await fetch(`http://localhost:3000/.netlify/functions/server/api/users/${user.id}/company`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code: codigoEmpresa }),
@@ -89,7 +94,7 @@ const Favorites: React.FC = () => {
         const fetchFavorites = async () => {
             if (!user) return;
             try {
-                const response = await axios.get<{ body: FavoriteManual[] }>(`https://guiaclick.netlify.app/.netlify/functions/server/api/users/${user.id}/favorites`);
+                const response = await axios.get<{ body: FavoriteManual[] }>(`http://localhost:3000/.netlify/functions/server/api/users/${user.id}/favorites`);
                 const ids = response.data.body.map((m) => String(m.id));
                 setFavoriteIds(ids);
                 console.log("Favoritos:", ids);
@@ -214,6 +219,9 @@ const Favorites: React.FC = () => {
                                     </div>
                                     <p className="text-sm text-gray-700 leading-snug">
                                         {manual.description}
+                                    </p>
+                                    <p className="mt-2 text-xs text-gray-500">
+                                        Pasos: {manual.step_count}
                                     </p>
                                 </div>
                             </motion.div>

@@ -23,6 +23,7 @@ export interface Manual {
     image?: string;
     company_id?: number | null;
     company_name?: string | null;
+    step_count: number;
 }
 
 const Home: React.FC = () => {
@@ -48,7 +49,7 @@ const Home: React.FC = () => {
 
         try {
             const response = await fetch(
-                `https://guiaclick.netlify.app/.netlify/functions/server/api/users/${user.id}/company`,
+                `http://localhost:3000/.netlify/functions/server/api/users/${user.id}/company`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -118,12 +119,17 @@ const Home: React.FC = () => {
     return (
         <div className="min-h-screen bg-[#F9FAFB] text-[#202020] flex flex-col">
             <div className="flex-1 px-4 py-4 max-w-full mx-auto">
+                {/* Título */}
+                <h1 className="text-3xl font-bold text-center mb-4">                    Bienvenido a GuíaClick {user?.name ? `${user.name}` : ""}                    </h1>
+
                 {/* Logo */}
                 <div className="flex justify-center mb-2">
                     <div className="cursor-pointer flex flex-col items-center" onClick={() => navigate("/")}>
                         <img src={logo} alt="Logo GuíaClick" className="w-55 h-55 object-contain mb-1" />
                     </div>
                 </div>
+
+
 
                 {/* Buscador */}
                 <div className="relative max-w-xl mx-auto mb-6 w-full">
@@ -180,6 +186,10 @@ const Home: React.FC = () => {
                                         {manual.title}
                                     </div>
                                     <p className="text-sm text-gray-700 leading-snug">{manual.description}</p>
+                                    {/* ← Aquí */}
+                                    <p className="mt-2 text-xs text-gray-500">
+                                        Pasos: {manual.step_count}
+                                    </p>
                                 </div>
                             </motion.div>
                         ))}
@@ -250,7 +260,7 @@ const Home: React.FC = () => {
             <footer className="bg-white shadow-inner text-center py-4 text-sm text-gray-400">
                 © {new Date().getFullYear()} GuíaClick - Todos los derechos reservados
             </footer>
-        </div>
+        </div >
     );
 };
 

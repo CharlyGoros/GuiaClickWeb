@@ -48,12 +48,11 @@ export const ManualPage: React.FC = () => {
             setLoading(true);
             try {
                 const [mRes, sRes, rRes, fRes] = await Promise.all([
-                    fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuales/${manualId}`).then(r => r.json()),
-                    fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuals/${manualId}/steps`).then(r => r.json()),
-                    fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/valoraciones/manuales/${manualId}`).then(r => r.json()),
-                    fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/users/${currentUserId}/favorites/${manualId}/check`).then(r => r.json()),
+                    fetch(`http://localhost:3000/.netlify/functions/server/api/manuales/${manualId}`).then(r => r.json()),
+                    fetch(`http://localhost:3000/.netlify/functions/server/api/manuals/${manualId}/steps`).then(r => r.json()),
+                    fetch(`http://localhost:3000/.netlify/functions/server/api/valoraciones/manuales/${manualId}`).then(r => r.json()),
+                    fetch(`http://localhost:3000/.netlify/functions/server/api/users/${currentUserId}/favorites/${manualId}/check`).then(r => r.json()),
                 ]);
-
                 if (!cancelled) {
                     setManual(mRes.body);
                     setSteps(sRes.body);
@@ -71,27 +70,29 @@ export const ManualPage: React.FC = () => {
     }, [manualId, currentUserId]);
 
     const toggleFavorite = async () => {
-        const url = `https://guiaclick.netlify.app/.netlify/functions/server/api/users/${currentUserId}/favorites/${manualId}`;
         try {
-            await fetch(url, { method: isFav ? "DELETE" : "POST" });
+            await fetch(`/api/users/${currentUserId}/favorites/${manualId}`, {
+                method: isFav ? "DELETE" : "POST"
+            });
             setIsFav(!isFav);
-        } catch (e) { console.error(e); }
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     const reloadRatings = async () => {
-        const rRes = await fetch(
-            `https://guiaclick.netlify.app/.netlify/functions/server/api/valoraciones/manuales/${manualId}`
-        ).then(r => r.json());
+        const rRes = await fetch(`/api/valoraciones/manuales/${manualId}`).then(r => r.json());
         setRatings(rRes.body);
     };
 
-    const handleDeleteRating = async (manual: number) => {
-        console.log(`Deleting rating ${manual} for user ${currentUserId}`);
-        await fetch(
-            `https://guiaclick.netlify.app/.netlify/functions/server/api/ratings/${currentUserId}/${manual}`,
-            { method: "DELETE" }
-        );
-        reloadRatings();
+    const handleDeleteRating = async (ratingId: number) => {
+        if (!window.confirm("¿Estás seguro de eliminar tu opinión?")) return;
+        try {
+            await fetch(`/api/ratings/${currentUserId}/${ratingId}`, { method: "DELETE" });
+            reloadRatings();
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     const openAddModal = () => setShowAddModal(true);
@@ -100,11 +101,9 @@ export const ManualPage: React.FC = () => {
         setNewComment("");
         setNewScore(0);
     };
-
     const confirmAdd = async () => {
-        await fetch(
-            `https://guiaclick.netlify.app/.netlify/functions/server/api/ratings`,
-            {
+        try {
+            await fetch(`/api/ratings`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -113,10 +112,12 @@ export const ManualPage: React.FC = () => {
                     score: newScore,
                     comment: newComment,
                 }),
-            }
-        );
-        await reloadRatings();
-        closeAddModal();
+            });
+            await reloadRatings();
+            closeAddModal();
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     if (loading || !manual) {
@@ -151,11 +152,14 @@ export const ManualPage: React.FC = () => {
 
                 {/* Imagen principal */}
                 {manual.image && (
-                    <img
-                        src={manual.image}
-                        alt={manual.title}
-                        className="w-full h-52 object-cover rounded-lg"
-                    />
+                    <div className="w-full overflow-hidden rounded-lg shadow">
+                        <img
+                            src={manual.image}
+                            alt={manual.title}
+                            loading="lazy"
+                            className="mx-auto max-w-full max-h-[400px] object-contain"
+                        />
+                    </div>
                 )}
 
                 {/* Descripción */}
@@ -169,20 +173,20 @@ export const ManualPage: React.FC = () => {
                         Pasos
                     </div>
                     <div className="space-y-6 bg-white p-4 rounded-b-md shadow">
-                        {steps.map((step) => (
-                            <div
-                                key={step.id}
-                                className="border-t border-gray-300 pt-4"
-                            >
+                        {steps.map(step => (
+                            <div key={step.id} className="border-t border-gray-300 pt-4">
                                 <p className="font-bold text-base text-gray-800 mb-2">
                                     Paso {step.order}: {step.title}
                                 </p>
                                 {step.image && (
-                                    <img
-                                        src={step.image}
-                                        alt={step.title}
-                                        className="w-full h-40 object-cover rounded-md mb-2"
-                                    />
+                                    <div className="w-full overflow-hidden rounded-md mb-2 shadow">
+                                        <img
+                                            src={step.image}
+                                            alt={step.title}
+                                            loading="lazy"
+                                            className="mx-auto max-w-full max-h-[300px] object-contain"
+                                        />
+                                    </div>
                                 )}
                                 <p className="text-gray-700">{step.description}</p>
                             </div>
@@ -190,7 +194,7 @@ export const ManualPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Mi opinión */}
+                {/* Opiniones */}
                 {myRating && (
                     <>
                         <div className="bg-[#64C1C1] text-white px-4 py-2 rounded-lg font-bold">
@@ -215,12 +219,7 @@ export const ManualPage: React.FC = () => {
                                 )}
                             </div>
                             <button
-                                onClick={() => {
-                                    if (window.confirm("¿Estás seguro de eliminar tu opinión?")) {
-                                        handleDeleteRating(manualId);
-                                    }
-                                    handleDeleteRating(manualId)
-                                }}
+                                onClick={() => handleDeleteRating(myRating.id)}
                                 className="ml-4"
                             >
                                 <Trash2 className="w-6 h-6 text-red-500 hover:text-red-700" />
@@ -240,7 +239,6 @@ export const ManualPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* Otras opiniones */}
                 {otherRatings.length > 0 && (
                     <>
                         <div className="bg-[#64C1C1] text-white px-4 py-2 rounded-lg font-bold">
@@ -248,10 +246,7 @@ export const ManualPage: React.FC = () => {
                         </div>
                         <div className="space-y-4">
                             {otherRatings.map(r => (
-                                <div
-                                    key={r.id}
-                                    className="bg-white rounded-lg p-4 flex items-center shadow"
-                                >
+                                <div key={r.id} className="bg-white rounded-lg p-4 flex items-center shadow">
                                     <User className="w-10 h-10 text-gray-400" />
                                     <div className="ml-3 flex-1">
                                         <p className="text-gray-800">{r.comment}</p>
@@ -274,6 +269,7 @@ export const ManualPage: React.FC = () => {
                         </div>
                     </>
                 )}
+
             </div>
 
             {/* Modal de Agregar opinión */}
@@ -301,7 +297,6 @@ export const ManualPage: React.FC = () => {
                                 onChange={(e) => setNewComment(e.target.value)}
                                 className="w-full border border-[#64C1C1] rounded p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-[#64C1C1]"
                             />
-
                             <div className="flex justify-center space-x-1 mb-4">
                                 {[1, 2, 3, 4, 5].map(i => (
                                     <button key={i} onClick={() => setNewScore(i)}>
@@ -311,7 +306,6 @@ export const ManualPage: React.FC = () => {
                                     </button>
                                 ))}
                             </div>
-
                             <div className="flex justify-between">
                                 <button
                                     onClick={closeAddModal}
@@ -332,4 +326,6 @@ export const ManualPage: React.FC = () => {
             </AnimatePresence>
         </div>
     );
-}
+};
+
+export default ManualPage;

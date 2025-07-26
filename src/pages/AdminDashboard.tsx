@@ -28,10 +28,10 @@ export const DashboardPage: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             const [resUsers, resManuals] = await Promise.all([
-                fetch("https://guiaclick.netlify.app/.netlify/functions/server/api/usuarios").then((res) =>
+                fetch("http://localhost:3000/.netlify/functions/server/api/usuarios").then((res) =>
                     res.json()
                 ),
-                fetch("https://guiaclick.netlify.app/.netlify/functions/server/api/manuales-dashboard").then((res) =>
+                fetch("http://localhost:3000/.netlify/functions/server/api/manuales-dashboard").then((res) =>
                     res.json()
                 ),
             ]);
@@ -44,7 +44,7 @@ export const DashboardPage: React.FC = () => {
 
     const handleDeleteUser = async (id: number) => {
         if (confirm("¿Eliminar este usuario?")) {
-            await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/usuarios/${id}`, {
+            await fetch(`http://localhost:3000/.netlify/functions/server/api/usuarios/${id}`, {
                 method: "DELETE",
             });
             setUsuarios((prev) => prev.filter((u) => u.id !== id));
@@ -53,7 +53,7 @@ export const DashboardPage: React.FC = () => {
 
     const handleDeleteManual = async (id: number) => {
         if (confirm("¿Eliminar este manual?")) {
-            await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuals/${id}`, {
+            await fetch(`http://localhost:3000/.netlify/functions/server/api/manuals/${id}`, {
                 method: "DELETE",
             });
             setManuales((prev) => prev.filter((m) => m.id !== id));

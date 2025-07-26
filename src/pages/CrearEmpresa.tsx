@@ -18,7 +18,7 @@ const CrearEmpresa: React.FC = () => {
 
         try {
             await axios.post(
-                "https://guiaclick.netlify.app/.netlify/functions/server/api/empresas/crear",
+                "http://localhost:3000/.netlify/functions/server/api/empresas/crear",
                 {
                     empresa_nombre: empresa,
                     admin_nombre: adminNombre,
