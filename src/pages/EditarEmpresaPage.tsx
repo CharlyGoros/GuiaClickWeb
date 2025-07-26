@@ -14,8 +14,6 @@ const EmpresaEditarPage: React.FC = () => {
 
     useEffect(() => {
         const fetchEmpresa = async () => {
-
-            console.log("Cargando empresa para el usuario:", user);
             if (!user?.company_id) return;
             try {
                 const res = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/companies/${user.company_id}`);
@@ -40,7 +38,6 @@ const EmpresaEditarPage: React.FC = () => {
             });
 
             if (!res.ok) throw new Error("Error al actualizar");
-
             alert("Empresa actualizada correctamente.");
         } catch (error) {
             console.error("Error al guardar:", error);
@@ -73,11 +70,11 @@ const EmpresaEditarPage: React.FC = () => {
     };
 
     return (
-        <div className="max-w-xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-4 text-[#127C82]">Editar Empresa</h1>
+        <div className="max-w-lg mx-auto mt-16 bg-white rounded-xl shadow-lg p-8 space-y-6">
+            <h1 className="text-3xl font-bold text-center text-[#127C82]">Administrador de Empresas</h1>
 
-            <div className="mb-4">
-                <label className="block text-sm mb-1 text-gray-600">Nombre de la empresa</label>
+            <div>
+                <p className="text-lg font-semibold mb-2 text-gray-800">Editando: <span className="font-bold">{nombreEmpresa}</span></p>
                 <Input
                     value={nombreEmpresa}
                     onChange={(e) => setNombreEmpresa(e.target.value)}
@@ -85,22 +82,20 @@ const EmpresaEditarPage: React.FC = () => {
                 />
             </div>
 
-            <div className="flex gap-4 mt-6">
-                <Button onClick={handleGuardar} disabled={guardando}>
+            <div className="flex flex-wrap gap-3 justify-start">
+                <Button onClick={handleGuardar} disabled={guardando} className="bg-blue-600 hover:bg-blue-700">
                     {guardando ? "Guardando..." : "Guardar cambios"}
                 </Button>
-                <Button variant="outline" onClick={() => navigate("/")}>
-                    Volver
+                <Button variant="outline" onClick={handleGenerarCodigo}>
+                    Generar Código
+                </Button>
+                <Button onClick={() => navigate("/")} className="bg-red-600 hover:bg-red-700 text-white">
+                    Cancelar
                 </Button>
             </div>
 
-            <hr className="my-8" />
-
-            <h2 className="text-xl font-semibold mb-3">Generar código de acceso</h2>
-            <Button onClick={handleGenerarCodigo}>Generar código nuevo</Button>
-
             {codigoGenerado && (
-                <div className="mt-4 p-3 bg-green-100 text-green-800 rounded text-center">
+                <div className="mt-6 text-center bg-green-100 text-green-800 rounded-md py-2 px-4 font-mono">
                     Código generado: <strong>{codigoGenerado}</strong>
                 </div>
             )}
