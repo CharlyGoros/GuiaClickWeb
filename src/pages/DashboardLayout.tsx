@@ -1,4 +1,5 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+// src/pages/DashboardLayout.tsx
+import React, { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '@/hooks/useAuth';
 
@@ -9,23 +10,11 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement>(null);
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
-
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-                setIsMenuOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
 
     return (
         <div className="min-h-screen bg-[#f7fafa] flex">
@@ -59,15 +48,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                     <li>
                         <button
                             onClick={handleLogout}
-                            className="w-full text-left px-3 py-2 text-red-600 rounded hover:bg-[#fee]
-            "
+                            className="w-full text-left px-3 py-2 text-red-600 rounded hover:bg-[#fee]"
                         >
                             Cerrar sesión
                         </button>
                     </li>
                 </ul>
             </aside>
-            <main className="flex-1 p-6 space-y-6"> {children} </main>
+            <main className="flex-1 p-6 space-y-6">
+                {children}
+            </main>
         </div>
     );
 };
