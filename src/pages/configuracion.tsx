@@ -1,13 +1,13 @@
 // src/pages/Configuracion.tsx
 import { useState, useRef, useEffect } from "react";
 import { Menu } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Configuracion() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null);
-    const location = useLocation();
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
