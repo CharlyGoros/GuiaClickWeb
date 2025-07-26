@@ -48,7 +48,7 @@ const Home: React.FC = () => {
 
         try {
             const response = await fetch(
-                `http://localhost:3000/.netlify/functions/server/api/users/${user.id}/company`,
+                `https://guiaclick.netlify.app/.netlify/functions/server/api/users/${user.id}/company`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

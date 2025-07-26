@@ -85,7 +85,7 @@ const CrearManualPage: React.FC = () => {
                 })
             );
 
-            await axios.post("http://localhost:3000/.netlify/functions/server/api/manuals", {
+            await axios.post("https://guiaclick.netlify.app/.netlify/functions/server/api/manuals", {
                 title,
                 description,
                 created_by: 1,

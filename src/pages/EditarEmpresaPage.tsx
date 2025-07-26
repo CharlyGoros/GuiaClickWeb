@@ -18,7 +18,7 @@ const EmpresaEditarPage: React.FC = () => {
             console.log("Cargando empresa para el usuario:", user);
             if (!user?.company_id) return;
             try {
-                const res = await fetch(`http://localhost:3000/.netlify/functions/server/api/companies/${user.company_id}`);
+                const res = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/companies/${user.company_id}`);
                 const data = await res.json();
                 setNombreEmpresa(data.body.name || "");
             } catch (error) {
@@ -33,7 +33,7 @@ const EmpresaEditarPage: React.FC = () => {
 
         try {
             setGuardando(true);
-            const res = await fetch(`http://localhost:3000/.netlify/functions/server/api/companies/${user.company_id}`, {
+            const res = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/companies/${user.company_id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: nombreEmpresa }),
@@ -54,7 +54,7 @@ const EmpresaEditarPage: React.FC = () => {
         if (!user?.company_id) return;
 
         try {
-            const res = await fetch(`http://localhost:3000/.netlify/functions/server/api/access-codes`, {
+            const res = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/access-codes`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ company_id: user.company_id }),

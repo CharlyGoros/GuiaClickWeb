@@ -26,7 +26,7 @@ const SuperadminEmpresas: React.FC = () => {
     }, [user, navigate]);
 
     useEffect(() => {
-        fetch(`http://localhost:3000/.netlify/functions/server/api/companies`)
+        fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/companies`)
             .then((res) => res.json())
             .then((data) => setCompanies(data.body))
             .catch(console.error);
@@ -41,7 +41,7 @@ const SuperadminEmpresas: React.FC = () => {
     const handleSave = async () => {
         if (!selected) return;
         try {
-            const response = await fetch(`http://localhost:3000/.netlify/functions/server/api/companies/${selected.id}`, {
+            const response = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/companies/${selected.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name: newName }),
@@ -61,7 +61,7 @@ const SuperadminEmpresas: React.FC = () => {
     const handleGenerarCodigo = async () => {
         if (!selected) return;
         try {
-            const response = await fetch(`http://localhost:3000/.netlify/functions/server/api/access-codes`, {
+            const response = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/access-codes`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ company_id: selected.id }),

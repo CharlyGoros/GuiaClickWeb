@@ -56,7 +56,7 @@ const Favorites: React.FC = () => {
         if (!codigoEmpresa || !user?.id) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/.netlify/functions/server/api/users/${user.id}/company`, {
+            const response = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/users/${user.id}/company`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code: codigoEmpresa }),
@@ -89,7 +89,7 @@ const Favorites: React.FC = () => {
         const fetchFavorites = async () => {
             if (!user) return;
             try {
-                const response = await axios.get<{ body: FavoriteManual[] }>(`http://localhost:3000/.netlify/functions/server/api/users/${user.id}/favorites`);
+                const response = await axios.get<{ body: FavoriteManual[] }>(`https://guiaclick.netlify.app/.netlify/functions/server/api/users/${user.id}/favorites`);
                 const ids = response.data.body.map((m) => String(m.id));
                 setFavoriteIds(ids);
                 console.log("Favoritos:", ids);
