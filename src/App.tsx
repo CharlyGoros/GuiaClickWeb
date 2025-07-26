@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
 import Navbar from './components/Navbar';
-import Login from './pages/Auth/Login';
+import Login from './pages/auth/login';
 import Home from './pages/Home';
-import Register from './pages/Auth/Registro';
+import Register from './pages/auth/registro';
 import { ManualPage } from './pages/manual';
 import CrearManualPage from './pages/CreateManualPage';
 import Favorites from './pages/Favorites';
