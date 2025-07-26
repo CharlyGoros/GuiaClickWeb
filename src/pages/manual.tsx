@@ -169,7 +169,7 @@ export const ManualPage: React.FC = () => {
                         Pasos
                     </div>
                     <div className="space-y-6 bg-white p-4 rounded-b-md shadow">
-                        {steps.map((step, index) => (
+                        {steps.map((step) => (
                             <div
                                 key={step.id}
                                 className="border-t border-gray-300 pt-4"
