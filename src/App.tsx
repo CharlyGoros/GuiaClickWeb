@@ -10,6 +10,9 @@ import Favorites from './pages/Favorites';
 import PrivateRoute from './services/PrivateRoute';
 import EditarManualPage from './pages/EditarManualPage';
 import { DashboardPage } from './pages/AdminDashboard';
+import CrearEmpresa from './pages/CrearEmpresa';
+import EmpresaEditarPage from './pages/EditarEmpresaPage';
+import SuperadminEmpresas from './pages/SuperAdminEmpresas';
 
 const App: React.FC = () => {
   const { user } = useAuth();
@@ -28,6 +31,9 @@ const App: React.FC = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
+        <Route path="/crear-empresa" element={<PrivateRoute element={<CrearEmpresa />} />} />
+        <Route path="/editar-empresa" element={<PrivateRoute element={<EmpresaEditarPage />} />} />
+        <Route path="/editar-empresa-admin" element={<PrivateRoute element={<SuperadminEmpresas />} />} />
       </Routes>
     </Router>
   );

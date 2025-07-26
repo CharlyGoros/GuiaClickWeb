@@ -6,6 +6,8 @@ export class User {
   role!: number; // 1: Admin, 2: User
   token?: string; // opcional, si se maneja autenticación basada en token
   // …cualquier otro campo
+  company_id?: number | null;
+  company_name?: string | null;
 
   constructor(data: Partial<User>) {
     Object.assign(this, data);

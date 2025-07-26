@@ -57,13 +57,43 @@ const Navbar: React.FC = () => {
                             {user ? (
                                 <>
                                     {/* Si es Admin (role === 1) mostramos Dashboard */}
-                                    {user.role === 1 && (
+                                    {user.role === 1 || user.role === -1 && (
                                         <li>
                                             <div
                                                 onClick={() => { navigate("/dashboard"); setIsMenuOpen(false); }}
                                                 className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
                                             >
                                                 Dashboard
+                                            </div>
+                                        </li>
+                                    )}
+                                    {user.role === -1 && (
+                                        <li>
+                                            <div
+                                                onClick={() => { navigate("/crear-empresa"); setIsMenuOpen(false); }}
+                                                className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
+                                            >
+                                                Crear Empresa
+                                            </div>
+                                        </li>
+                                    )}
+                                    {user.role === -1 && (
+                                        <li>
+                                            <div
+                                                onClick={() => { navigate("/editar-empresa-admin"); setIsMenuOpen(false); }}
+                                                className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
+                                            >
+                                                Editar Empresas
+                                            </div>
+                                        </li>
+                                    )}
+                                    {user.role === 1 && (
+                                        <li>
+                                            <div
+                                                onClick={() => { navigate(`/editar-empresa/`); setIsMenuOpen(false); }}
+                                                className="block px-6 py-3 text-base hover:bg-[#f0f0f0]"
+                                            >
+                                                Editar Empresa
                                             </div>
                                         </li>
                                     )}

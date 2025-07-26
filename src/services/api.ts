@@ -8,13 +8,7 @@ export interface LoginCredentials {
 
 export interface LoginResponseData {
   message: string;
-  user: {
-    token: string;
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-  };
+  body: User;
 }
 
 // const API_BASE_URL: string =

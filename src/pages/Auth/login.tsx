@@ -25,7 +25,7 @@ const Login: React.FC = () => {
         e.preventDefault();
         try {
             const user = await login(formData);
-            navigate(user.role === 1 ? '/home' : '/home');
+            navigate(user.role === 1 || user.role === -1 ? '/home' : '/home');
         } catch {
             // authError will show
         }

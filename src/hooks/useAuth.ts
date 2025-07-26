@@ -16,11 +16,11 @@ interface AuthState {
   error: string | null;
   login: (formData: LoginCredentials) => Promise<User>;
   logout: () => void;
+  setUser: (user: User | null) => void; // ✅ nueva función expuesta
 }
 
-// Creamos el store con un init diferido
 const useAuth = create<AuthState>((set) => {
-  // ⚡ Asíncronamente carga el user/token de localStorage
+  // ⚡ Carga inicial del user/token desde localStorage
   setTimeout(() => {
     try {
       const storedUser = localStorage.getItem("user");
@@ -48,20 +48,20 @@ const useAuth = create<AuthState>((set) => {
       set({ loading: true, error: null });
       try {
         const response = await login(formData);
-        const payload = response.data.body; // ✅ CORREGIDO
-        const token = response.data.body.token;
+        const payload = response.data.body;
+        const token = payload.token;
 
-        console.log("Login response:", response.data);
-        console.log("Token:", token);
-      const user = new User({
-  id: payload.id,
-  name: payload.name,
-  email: payload.email,
-  role: Number(payload.role),
-  token:token,
-});
+        const user = new User({
+          id: payload.id,
+          name: payload.name,
+          email: payload.email,
+          role: Number(payload.role),
+          token: token,
+          company_id: payload.company_id ?? null,
+          company_name: payload.company_name ?? null,
+        });
 
-        localStorage.setItem("token", token);
+        localStorage.setItem("token", token ?? '');
         localStorage.setItem("user", JSON.stringify(user));
 
         set({ user, token, loading: false });
@@ -83,6 +83,16 @@ const useAuth = create<AuthState>((set) => {
       localStorage.removeItem('user');
       set({ user: null, token: null, error: null });
     },
+
+    // ✅ NUEVA función para actualizar el user desde afuera
+    setUser: (user: User | null) => {
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('user');
+      }
+      set({ user });
+    }
   };
 });
 
