@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
 import axios from "axios";
 
 const CrearEmpresa: React.FC = () => {
@@ -27,7 +25,7 @@ const CrearEmpresa: React.FC = () => {
                 }
             );
 
-            setMensaje("Empresa y usuario creados correctamente.");
+            setMensaje("✅ Empresa y usuario creados correctamente.");
             setEmpresa("");
             setAdminNombre("");
             setAdminEmail("");
@@ -35,7 +33,8 @@ const CrearEmpresa: React.FC = () => {
         } catch (error: unknown) {
             console.error("Error:", error);
             setMensaje(
-                (error as any)?.response?.data?.message || "Ocurrió un error en el servidor."
+                (error as any)?.response?.data?.message ||
+                "❌ Ocurrió un error en el servidor."
             );
         } finally {
             setLoading(false);
@@ -43,47 +42,73 @@ const CrearEmpresa: React.FC = () => {
     };
 
     return (
-        <div className="max-w-md mx-auto p-6 mt-10 bg-white rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-6 text-center">Crear Empresa + Admin</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                    placeholder="Nombre de la empresa"
-                    value={empresa}
-                    onChange={(e) => setEmpresa(e.target.value)}
-                    required
-                />
-                <Input
-                    placeholder="Nombre del administrador"
-                    value={adminNombre}
-                    onChange={(e) => setAdminNombre(e.target.value)}
-                    required
-                />
-                <Input
-                    placeholder="Email del administrador"
-                    type="email"
-                    value={adminEmail}
-                    onChange={(e) => setAdminEmail(e.target.value)}
-                    required
-                />
-                <Input
-                    placeholder="Contraseña"
-                    type="password"
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    required
-                />
+        <div className="min-h-screen flex items-center justify-center bg-[#f7fafa] px-4">
+            <div className="w-full max-w-lg bg-white rounded-xl shadow-xl p-10">
+                <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">
+                    Crear Empresa y Administrador
+                </h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-5">
+                        <input
+                            type="text"
+                            placeholder="Nombre de la empresa"
+                            value={empresa}
+                            onChange={(e) => setEmpresa(e.target.value)}
+                            required
+                            className="w-full h-12 px-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                    </div>
+                    <div className="mb-5">
+                        <input
+                            type="text"
+                            placeholder="Nombre del administrador"
+                            value={adminNombre}
+                            onChange={(e) => setAdminNombre(e.target.value)}
+                            required
+                            className="w-full h-12 px-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                    </div>
+                    <div className="mb-5">
+                        <input
+                            type="email"
+                            placeholder="Email del administrador"
+                            value={adminEmail}
+                            onChange={(e) => setAdminEmail(e.target.value)}
+                            required
+                            className="w-full h-12 px-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                    </div>
+                    <div className="mb-6">
+                        <input
+                            type="password"
+                            placeholder="Contraseña"
+                            value={adminPassword}
+                            onChange={(e) => setAdminPassword(e.target.value)}
+                            required
+                            className="w-full h-12 px-4 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                    </div>
 
-                <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-[#64C1C1] text-white"
-                >
-                    {loading ? "Creando..." : "Crear empresa y administrador"}
-                </Button>
-                {mensaje && (
-                    <p className="text-center mt-2 text-sm text-gray-700">{mensaje}</p>
-                )}
-            </form>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full h-12 bg-[#117b7b] hover:bg-[#0f6666] text-white text-base font-semibold rounded-md transition-all"
+                    >
+                        {loading ? "Creando..." : "Crear empresa y administrador"}
+                    </button>
+
+                    {mensaje && (
+                        <p
+                            className={`text-center text-sm mt-4 ${mensaje.startsWith("✅")
+                                ? "text-green-600"
+                                : "text-red-600"
+                                }`}
+                        >
+                            {mensaje}
+                        </p>
+                    )}
+                </form>
+            </div>
         </div>
     );
 };

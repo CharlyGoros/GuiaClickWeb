@@ -1,7 +1,8 @@
-// src/pages/Login.tsx
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import useAuth from '../../hooks/useAuth';
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
+import logo from "../../assets/LogoGC.png";
+import bgImage from "../../assets/background.jpg";
 
 interface LoginFormData {
     email: string;
@@ -13,8 +14,8 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState<LoginFormData>({
-        email: '',
-        password: '',
+        email: "",
+        password: "",
     });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -25,78 +26,73 @@ const Login: React.FC = () => {
         e.preventDefault();
         try {
             const user = await login(formData);
-            navigate(user.role === 1 || user.role === -1 ? '/home' : '/home');
+            navigate(user.role === 1 || user.role === -1 ? "/home" : "/home");
         } catch {
-            // authError will show
+            // authError se muestra abajo
         }
     };
 
     return (
-        <div className="container vh-100 d-flex align-items-center justify-content-center">
-            <div className="col-12 col-md-6 col-lg-4">
-                <div className="card shadow-sm">
-                    <div className="card-body p-4">
-                        <h3 className="card-title text-center mb-4">Iniciar Sesión</h3>
+        <div className="relative min-h-screen flex items-center justify-center px-4 bg-[#f7fafa] overflow-hidden">
+            {/* Fondo blur */}
+            <img
+                src={bgImage}
+                alt="fondo login"
+                className="absolute inset-0 w-full h-full object-cover opacity-35 blur-sm"
+            />
 
-                        {authError && (
-                            <div className="alert alert-danger" role="alert">
-                                {authError}
-                            </div>
-                        )}
+            {/* Contenedor del formulario */}
+            <div className="relative w-full max-w-md bg-white rounded-xl shadow-2xl p-10 z-10">
+                <div className="flex justify-center mb-6">
+                    <img src={logo} alt="GuíaClick" className="h-35" />
+                </div>
 
-                        <form onSubmit={handleSubmit} noValidate>
-                            <div className="mb-3">
-                                <label htmlFor="email" className="form-label">
-                                    Correo electrónico
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    className="form-control"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
+                <h2 className="text-2xl font-bold text-center mb-3 text-gray-800">
+                    Bienvenido a GuíaClick
+                </h2>
+                <p className="text-center text-sm text-gray-500 mb-6">
+                    La forma más simple de aprender tecnología.
+                </p>
 
-                            <div className="mb-4">
-                                <label htmlFor="password" className="form-label">
-                                    Contraseña
-                                </label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    className="form-control"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="btn btn-primary w-100"
-                                disabled={loading}
-                            >
-                                {loading ? (
-                                    <span className="spinner-border spinner-border-sm" role="status" />
-                                ) : (
-                                    'Entrar'
-                                )}
-                            </button>
-                        </form>
-
-                        <div className="text-center mt-3">
-                            <small className="text-muted">
-                                ¿No tienes cuenta?{' '}
-                                <Link to="/register" className="link-primary">
-                                    Regístrate
-                                </Link>
-                            </small>
-                        </div>
+                {authError && (
+                    <div className="text-red-600 text-sm text-center mb-4">
+                        {authError}
                     </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Correo electrónico"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full h-12 px-4 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Contraseña"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        className="w-full h-12 px-4 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full h-12 bg-[#127C82] hover:bg-[#0f6666] text-white text-base font-semibold rounded transition-all"
+                    >
+                        {loading ? "Ingresando..." : "Entrar"}
+                    </button>
+                </form>
+
+                <div className="text-center mt-5 text-sm text-gray-600">
+                    ¿No tenés cuenta?{" "}
+                    <Link to="/register" className="text-[#117b7b] hover:underline">
+                        Regístrate
+                    </Link>
                 </div>
             </div>
         </div>

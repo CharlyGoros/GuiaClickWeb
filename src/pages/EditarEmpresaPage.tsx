@@ -1,111 +1,73 @@
-import React, { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import useAuth from "@/hooks/useAuth";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const EmpresaEditarPage: React.FC = () => {
-    const { user } = useAuth();
+const EditarEmpresa: React.FC = () => {
     const navigate = useNavigate();
+    const [nombreEmpresa, setNombreEmpresa] = useState("iLikeSoju");
+    const [codigoGenerado, setCodigoGenerado] = useState<string | null>(null);
 
-    const [nombreEmpresa, setNombreEmpresa] = useState("");
-    const [codigoGenerado, setCodigoGenerado] = useState("");
-    const [guardando, setGuardando] = useState(false);
-
-    useEffect(() => {
-        const fetchEmpresa = async () => {
-
-            console.log("Cargando empresa para el usuario:", user);
-            if (!user?.company_id) return;
-            try {
-                const res = await fetch(`http://localhost:3000/.netlify/functions/server/api/companies/${user.company_id}`);
-                const data = await res.json();
-                setNombreEmpresa(data.body.name || "");
-            } catch (error) {
-                console.error("Error al obtener empresa:", error);
-            }
-        };
-        fetchEmpresa();
-    }, [user]);
-
-    const handleGuardar = async () => {
-        if (!user?.company_id || !nombreEmpresa.trim()) return;
-
-        try {
-            setGuardando(true);
-            const res = await fetch(`http://localhost:3000/.netlify/functions/server/api/companies/${user.company_id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: nombreEmpresa }),
-            });
-
-            if (!res.ok) throw new Error("Error al actualizar");
-
-            alert("Empresa actualizada correctamente.");
-        } catch (error) {
-            console.error("Error al guardar:", error);
-            alert("Error al guardar la empresa.");
-        } finally {
-            setGuardando(false);
-        }
+    const handleGuardar = () => {
+        // Simular guardado
+        console.log("Empresa actualizada:", nombreEmpresa);
     };
 
-    const handleGenerarCodigo = async () => {
-        if (!user?.company_id) return;
-
-        try {
-            const res = await fetch(`http://localhost:3000/.netlify/functions/server/api/access-codes`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ company_id: user.company_id }),
-            });
-
-            const data = await res.json();
-            if (data.body?.code) {
-                setCodigoGenerado(data.body.code);
-            } else {
-                throw new Error("Error al generar código");
-            }
-        } catch (error) {
-            console.error("Error al generar código:", error);
-            alert("No se pudo generar el código");
-        }
+    const handleGenerarCodigo = () => {
+        const codigo = Math.random().toString(36).substring(2, 8).toUpperCase();
+        setCodigoGenerado(codigo);
     };
 
     return (
-        <div className="max-w-xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-4 text-[#127C82]">Editar Empresa</h1>
+        <div className="max-w-2xl mx-auto px-6 py-12">
+            <h1 className="text-3xl font-bold mb-8 text-gray-800">Editar Empresa</h1>
 
-            <div className="mb-4">
-                <label className="block text-sm mb-1 text-gray-600">Nombre de la empresa</label>
-                <Input
+            <div className="space-y-4">
+                <label htmlFor="empresa" className="block text-sm font-medium text-gray-700">
+                    Nombre de la empresa
+                </label>
+                <input
+                    id="empresa"
+                    type="text"
                     value={nombreEmpresa}
                     onChange={(e) => setNombreEmpresa(e.target.value)}
-                    placeholder="Nombre de la empresa"
+                    className="w-full h-12 px-4 border border-gray-300 rounded-md shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
-            </div>
 
-            <div className="flex gap-4 mt-6">
-                <Button onClick={handleGuardar} disabled={guardando}>
-                    {guardando ? "Guardando..." : "Guardar cambios"}
-                </Button>
-                <Button variant="outline" onClick={() => navigate("/")}>
-                    Volver
-                </Button>
-            </div>
-
-            <hr className="my-8" />
-
-            <h2 className="text-xl font-semibold mb-3">Generar código de acceso</h2>
-            <Button onClick={handleGenerarCodigo}>Generar código nuevo</Button>
-
-            {codigoGenerado && (
-                <div className="mt-4 p-3 bg-green-100 text-green-800 rounded text-center">
-                    Código generado: <strong>{codigoGenerado}</strong>
+                <div className="flex flex-wrap gap-4 mt-4">
+                    <button
+                        onClick={handleGuardar}
+                        className="bg-[#117b7b] hover:bg-[#0f6666] text-white font-semibold py-2 px-6 rounded-md transition-all"
+                    >
+                        Guardar cambios
+                    </button>
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="border border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold py-2 px-6 rounded-md transition-all"
+                    >
+                        Volver
+                    </button>
                 </div>
-            )}
+            </div>
+
+            <hr className="my-10 border-gray-300" />
+
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">Generar código de acceso</h2>
+
+            <div className="flex flex-col gap-3">
+                <button
+                    onClick={handleGenerarCodigo}
+                    className="bg-[#117b7b] hover:bg-[#0f6666] text-white font-semibold py-2 px-6 rounded-md w-fit"
+                >
+                    Generar código nuevo
+                </button>
+
+                {codigoGenerado && (
+                    <p className="text-green-600 text-sm mt-1">
+                        Código generado: <strong>{codigoGenerado}</strong>
+                    </p>
+                )}
+            </div>
         </div>
     );
 };
 
-export default EmpresaEditarPage;
+export default EditarEmpresa;
