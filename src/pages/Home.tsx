@@ -178,7 +178,7 @@ const Home: React.FC = () => {
                                 {manual.image ? (
                                     <img src={manual.image} alt={manual.title} className="w-full h-60 object-cover rounded mb-4" />
                                 ) : (
-                                    <div className="w-full h-50 bg-gray-200 rounded mb-4" />
+                                    <div className="w-full h-60 bg-gray-200 rounded mb-4" />
                                 )}
                                 <div>
                                     <div className="text-sm font-semibold bg-[#64C1C1] text-white rounded-full px-3 py-1 inline-block mb-2">
@@ -218,7 +218,7 @@ const Home: React.FC = () => {
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
-                                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
+                                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50"
                                 >
                                     <motion.div
                                         initial={{ scale: 0.9 }}
