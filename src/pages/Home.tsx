@@ -120,7 +120,6 @@ const Home: React.FC = () => {
         <div className="min-h-screen bg-[#F9FAFB] text-[#202020] flex flex-col">
             <div className="flex-1 px-4 py-4 max-w-full mx-auto">
                 {/* Título */}
-                <h1 className="text-3xl font-bold text-center mb-4">                    Bienvenido a GuíaClick {user?.name ? `${user.name}` : ""}                    </h1>
 
                 {/* Logo */}
                 <div className="flex justify-center mb-2">
@@ -128,7 +127,7 @@ const Home: React.FC = () => {
                         <img src={logo} alt="Logo GuíaClick" className="w-55 h-55 object-contain mb-1" />
                     </div>
                 </div>
-
+                <h1 className="text-3xl font-bold text-center mb-4">                    Bienvenido a GuíaClick {user?.name ? `${user.name}` : ""}                    </h1>
 
 
                 {/* Buscador */}
@@ -137,7 +136,7 @@ const Home: React.FC = () => {
                         placeholder="Buscar manual..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        className="w-full rounded-lg px-6 py-4 bg-[#64C1C1] text-white placeholder-white text-lg shadow-sm focus:ring-2 focus:ring-[#90DFDF]"
+                        className="w-full rounded px-6 py-4 bg-[#64C1C1] text-white placeholder-white text-lg shadow-sm focus:ring-2 focus:ring-[#90DFDF]"
                     />
                     <Search className="absolute right-5 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" />
                 </div>
@@ -166,7 +165,7 @@ const Home: React.FC = () => {
                         {filteredManuals.map((manual) => (
                             <motion.div
                                 key={manual.objectID}
-                                className="relative flex flex-col bg-white rounded-lg shadow-sm p-5 h-full min-w-[260px] cursor-pointer hover:shadow-md transition-all"
+                                className="relative flex flex-col bg-white rounded shadow-sm p-3 h-full min-w-[290px] cursor-pointer hover:shadow-md transition-all"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 onClick={() => navigate(`/manual/${manual.objectID}`)}
@@ -179,7 +178,7 @@ const Home: React.FC = () => {
                                 {manual.image ? (
                                     <img src={manual.image} alt={manual.title} className="w-full h-60 object-cover rounded mb-4" />
                                 ) : (
-                                    <div className="w-full h-60 bg-gray-200 rounded mb-4" />
+                                    <div className="w-full h-50 bg-gray-200 rounded mb-4" />
                                 )}
                                 <div>
                                     <div className="text-sm font-semibold bg-[#64C1C1] text-white rounded-full px-3 py-1 inline-block mb-2">

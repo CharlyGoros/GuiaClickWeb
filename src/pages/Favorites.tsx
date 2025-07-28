@@ -165,7 +165,7 @@ const Favorites: React.FC = () => {
                         placeholder="Buscar manual..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        className="w-full rounded-lg px-6 py-4 bg-[#64C1C1] text-white placeholder-white text-lg shadow-sm focus:ring-2 focus:ring-[#90DFDF]"
+                        className="w-full rounded px-6 py-4 bg-[#64C1C1] text-white placeholder-white text-lg shadow-sm focus:ring-2 focus:ring-[#90DFDF]"
                     />
                     <Search className="absolute right-5 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" />
                 </div>
@@ -193,7 +193,7 @@ const Favorites: React.FC = () => {
                         {filteredManuals.map((manual) => (
                             <motion.div
                                 key={manual.objectID}
-                                className="relative flex flex-col bg-white rounded-lg shadow-sm p-5 h-full min-w-[260px] cursor-pointer hover:shadow-md transition-all"
+                                className="relative flex flex-col bg-white rounded shadow-sm p-5 h-full min-w-[260px] cursor-pointer hover:shadow-md transition-all"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 onClick={() => navigate(`/manual/${manual.objectID}`)}

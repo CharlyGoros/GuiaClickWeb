@@ -28,6 +28,9 @@ const EditarManualPage: React.FC = () => {
     const [manual, setManual] = useState<ManualData | null>(null);
     const [loading, setLoading] = useState(false);
 
+    // Estado para mostrar modal de feedback
+    const [modalMessage, setModalMessage] = useState<string | null>(null);
+
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -57,6 +60,7 @@ const EditarManualPage: React.FC = () => {
                 });
             } catch (err) {
                 console.error("Error cargando manual o pasos:", err);
+                setModalMessage("Error al cargar el manual 📄");
             } finally {
                 setLoading(false);
             }
@@ -117,7 +121,7 @@ const EditarManualPage: React.FC = () => {
 
     const handleSubmit = async () => {
         if (!manual || !isFormValid) {
-            alert("Por favor completa todos los campos requeridos");
+            setModalMessage("Por favor completa todos los campos requeridos ⚠️");
             return;
         }
         setLoading(true);
@@ -154,11 +158,12 @@ const EditarManualPage: React.FC = () => {
                 `http://localhost:3000/.netlify/functions/server/api/manuals/${id}`,
                 payload
             );
-            alert("Manual actualizado correctamente");
-            navigate("/dashboard/users");
+
+            setModalMessage("Manual actualizado correctamente ✅");
+            setTimeout(() => navigate("/dashboard/users"), 1500);
         } catch (err) {
             console.error("Error actualizando manual:", err);
-            alert("Error al actualizar el manual");
+            setModalMessage("Error al actualizar el manual ❌");
         } finally {
             setLoading(false);
         }
@@ -219,7 +224,7 @@ const EditarManualPage: React.FC = () => {
                     type="checkbox"
                     checked={manual.public}
                     onChange={(e) => handleInputChange("public", e.target.checked)}
-                />{' '}
+                />{" "}
                 Manual público
             </label>
 
@@ -287,6 +292,25 @@ const EditarManualPage: React.FC = () => {
                     {loading ? "Guardando..." : "Guardar Cambios"}
                 </button>
             </div>
+
+            {/* Modal de feedback */}
+            {modalMessage && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+                    <div className="relative bg-white rounded-lg shadow-lg p-6 w-96">
+                        <h2 className="text-lg font-bold text-gray-800 mb-4">Aviso</h2>
+                        <p className="text-gray-600 mb-6">{modalMessage}</p>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setModalMessage(null)}
+                                className="px-4 py-2 bg-[#127C82] text-white rounded hover:bg-[#0e6a70]"
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -13,15 +13,15 @@ interface Manual {
     created_at: string;
     step_count: number;
     favorites_count: number;
-    company_id: number;     // <-- añadimos esta propiedad
+    company_id: number;
 }
 
 const ManualsListPage: React.FC = () => {
     const [manuales, setManuales] = useState<Manual[]>([]);
+    const [manualToDelete, setManualToDelete] = useState<Manual | null>(null);
     const navigate = useNavigate();
     const { user } = useAuth();
 
-    // Definimos cuándo es admin: en tu backend rol 1 = Admin
     const isAdmin = user?.role == 1;
 
     useEffect(() => {
@@ -29,21 +29,21 @@ const ManualsListPage: React.FC = () => {
             .then(res => res.json())
             .then(data => {
                 let list: Manual[] = data.body || [];
-
-                // Si es admin, filtramos solo los manuales de su empresa
                 if (isAdmin && user?.company_id) {
                     list = list.filter(m => m.company_id === user.company_id);
                 }
-
                 setManuales(list);
             })
             .catch(console.error);
     }, [isAdmin, user?.company_id]);
 
-    const handleDelete = async (id: number) => {
-        if (!confirm('¿Eliminar manual?')) return;
-        await fetch(`http://localhost:3000/.netlify/functions/server/api/manuales/${id}`, { method: 'DELETE' });
-        setManuales(prev => prev.filter(m => m.id !== id));
+    const confirmDelete = async () => {
+        if (!manualToDelete) return;
+        await fetch(`http://localhost:3000/.netlify/functions/server/api/manuales/${manualToDelete.id}`, {
+            method: 'DELETE',
+        });
+        setManuales(prev => prev.filter(m => m.id !== manualToDelete.id));
+        setManualToDelete(null);
     };
 
     return (
@@ -98,7 +98,7 @@ const ManualsListPage: React.FC = () => {
                                         Editar
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(m.id)}
+                                        onClick={() => setManualToDelete(m)}
                                         className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                                     >
                                         Eliminar
@@ -116,6 +116,34 @@ const ManualsListPage: React.FC = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* Modal de confirmación */}
+            {manualToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-10 flex items-center justify-center z-50">
+                    <div className="bg-white rounded shadow-lg p-6 w-96">
+                        <h2 className="text-lg font-bold text-gray-800 mb-4 gap-3">
+                            Confirmar eliminación
+                        </h2>
+                        <p className="text-gray-600 mb-6">
+                            ¿Seguro que deseas eliminar el manual "{manualToDelete.title}"?
+                        </p>
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                onClick={() => setManualToDelete(null)}
+                                className="px-6 py-2 bg-gray-300 rounded hover:bg-gray-400 "
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 justify-between"
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </DashboardLayout>
     );
 };

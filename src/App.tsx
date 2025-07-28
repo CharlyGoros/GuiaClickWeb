@@ -22,16 +22,17 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      {user && <Navbar />}
+      {/* Navbar solo si hay usuario */}
+      {<Navbar />}
 
       <Routes>
         {/* Public routes */}
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
         <Route path="/registro" element={!user ? <Register /> : <Navigate to="/" replace />} />
         <Route path="/manual/:id" element={<ManualPage />} />
 
         {/* Protected routes */}
-        <Route path="/" element={<PrivateRoute element={<Home />} />} />
         <Route path="/favorites" element={<PrivateRoute element={<Favorites />} />} />
         <Route path="/crear-manual" element={<PrivateRoute element={<CrearManualPage />} />} />
         <Route path="/editar-manual/:id" element={<PrivateRoute element={<EditarManualPage />} />} />
@@ -50,7 +51,7 @@ const App: React.FC = () => {
         <Route path="/editar-empresa-admin" element={<PrivateRoute element={<SuperadminEmpresas />} />} />
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

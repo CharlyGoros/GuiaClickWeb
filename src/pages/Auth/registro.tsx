@@ -1,7 +1,8 @@
-// src/pages/auth/register.tsx
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createUser } from '../../services/api';
+import logo from "../../assets/LogoGC.png";
+import bgImage from "../../assets/background.jpg";
 
 interface RegisterFormData {
     name: string;
@@ -39,11 +40,7 @@ const Register: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            await createUser({
-                name,
-                email,
-                password,
-            });
+            await createUser({ name, email, password });
             setSuccess(true);
             setTimeout(() => navigate('/login'), 1500);
         } catch (err: unknown) {
@@ -59,108 +56,87 @@ const Register: React.FC = () => {
     };
 
     return (
-        <div className="container vh-100 d-flex align-items-center justify-content-center">
-            <div className="col-12 col-md-6 col-lg-5">
-                <div className="card shadow-sm">
-                    <div className="card-body p-4">
-                        <h3 className="card-title text-center mb-4">Crear Cuenta</h3>
+        <div className="relative min-h-screen flex items-center justify-center px-4 bg-[#f7fafa] overflow-hidden">
+            {/* Fondo blur */}
+            <img
+                src={bgImage}
+                alt="fondo login"
+                className="absolute inset-0 w-full h-full object-cover opacity-35 blur-sm"
+            />
 
-                        {error && (
-                            <div className="alert alert-danger" role="alert">
-                                {error}
-                            </div>
-                        )}
-                        {success && (
-                            <div className="alert alert-success" role="alert">
-                                Registro exitoso. Redirigiendo...
-                            </div>
-                        )}
+            {/* Card */}
+            <div className="relative z-10 w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+                <div className="flex flex-col items-center mb-6">
+                    <img src={logo} alt="GuíaClick" className="w-35 h-35 mb-" />
+                    <h2 className="text-2xl font-bold text-gray-800">Registrar Cuenta</h2>
+                    <p className="text-sm text-gray-600">Unite y empezá a aprender tecnología</p>
+                </div>
 
-                        <form onSubmit={handleSubmit} noValidate>
-                            <div className="mb-3">
-                                <label htmlFor="name" className="form-label">
-                                    Nombre completo
-                                </label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    className="form-control"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label htmlFor="email" className="form-label">
-                                    Correo electrónico
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    className="form-control"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label htmlFor="password" className="form-label">
-                                    Contraseña
-                                </label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    className="form-control"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                    minLength={6}
-                                />
-                            </div>
-
-                            <div className="mb-4">
-                                <label htmlFor="confirmPassword" className="form-label">
-                                    Confirmar contraseña
-                                </label>
-                                <input
-                                    type="password"
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    className="form-control"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    required
-                                    minLength={6}
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="btn btn-primary w-100"
-                                disabled={loading || success}
-                            >
-                                {loading ? (
-                                    <span className="spinner-border spinner-border-sm" role="status" />
-                                ) : (
-                                    'Registrarme'
-                                )}
-                            </button>
-                        </form>
-
-                        <div className="text-center mt-3">
-                            <small className="text-muted">
-                                ¿Ya tienes cuenta?{' '}
-                                <Link to="/login" className="link-primary">
-                                    Iniciar Sesión
-                                </Link>
-                            </small>
-                        </div>
+                {error && (
+                    <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center">
+                        {error}
                     </div>
+                )}
+                {success && (
+                    <div className="bg-green-100 text-green-700 p-2 rounded mb-4 text-center">
+                        Registro exitoso. Redirigiendo...
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Nombre completo"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded focus:ring-2 focus:ring-[#64C1C1] outline-none"
+                        required
+                    />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Correo electrónico"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded focus:ring-2 focus:ring-[#64C1C1] outline-none"
+                        required
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Contraseña"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded focus:ring-2 focus:ring-[#64C1C1] outline-none"
+                        required
+                        minLength={6}
+                    />
+                    <input
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Confirmar contraseña"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded focus:ring-2 focus:ring-[#64C1C1] outline-none"
+                        required
+                        minLength={6}
+                    />
+
+                    <button
+                        type="submit"
+                        className="w-full bg-[#127C82] text-white py-3 rounded shadow hover:bg-[#0e6366] transition"
+                        disabled={loading || success}
+                    >
+                        {loading ? "Registrando..." : "Registrarme"}
+                    </button>
+                </form>
+
+                <div className="text-center mt-4 text-sm text-gray-600">
+                    ¿Ya tienes cuenta?{" "}
+                    <Link to="/login" className="text-[#127C82] hover:underline">
+                        Iniciar Sesión
+                    </Link>
                 </div>
             </div>
         </div>
