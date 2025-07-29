@@ -139,6 +139,15 @@ const Register: React.FC = () => {
                         Iniciar Sesión
                     </div>
                 </div>
+                {/* Botón facha para ir al Home */}
+                <div className="mt-6 flex justify-center">
+                    <button
+                        onClick={() => navigate("/")}
+                        className="w-full h-12 bg-[#64C1C1] hover:bg-[#50a5a5] text-white font-semibold text-base rounded-md shadow-md transition-all"
+                    >
+                        Ir al Inicio
+                    </button>
+                </div>
             </div>
         </div>
     );

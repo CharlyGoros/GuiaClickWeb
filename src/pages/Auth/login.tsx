@@ -88,11 +88,24 @@ const Login: React.FC = () => {
                     </button>
                 </form>
 
-                <div className="text-center mt-5 text-sm text-gray-600">
+                <div className="text-center mt-4 text-sm text-gray-600">
                     ¿No tenés cuenta?{" "}
-                    <div onClick={() => navigate("/registro")} className="inline-block text-[#117b7b] hover:underline cursor-pointer">
+                    <div
+                        onClick={() => navigate("/registro")}
+                        className="inline-block text-[#117b7b] hover:underline cursor-pointer"
+                    >
                         Regístrate
                     </div>
+                </div>
+
+                {/* Botón facha para ir al Home */}
+                <div className="mt-6 flex justify-center">
+                    <button
+                        onClick={() => navigate("/")}
+                        className="w-full h-12 bg-[#64C1C1] hover:bg-[#50a5a5] text-white font-semibold text-base rounded-md shadow-md transition-all"
+                    >
+                        Ir al Inicio
+                    </button>
                 </div>
             </div>
         </div>
