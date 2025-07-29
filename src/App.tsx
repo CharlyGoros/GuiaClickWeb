@@ -17,7 +17,7 @@ import Login from './pages/Auth/login';
 import Register from './pages/Auth/registro';
 const Footer: React.FC = () => {
   return (
-    <footer className=" ">
+    <footer className=" bottom-0 left-0 w-full bg-white shadow-inner text-center py-4 text-sm text-gray-500 z-50">
       © {new Date().getFullYear()} GuíaClick - Todos los derechos reservados
     </footer>
   );

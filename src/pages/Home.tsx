@@ -142,7 +142,7 @@ const Home: React.FC = () => {
                 </div>
 
                 {/* Checkbox de filtro solo si pertenece a una empresa */}
-                {user?.company_id && (
+                {/*{user?.company_id && (
                     <div className="max-w-xl mx-auto mb-4 flex items-center gap-2">
                         <input
                             id="filtro-empresa"
@@ -255,10 +255,7 @@ const Home: React.FC = () => {
                 )}
             </div>
 
-            {/* Footer */}
-            <footer className="bg-white shadow-inner text-center py-4 text-sm text-gray-400">
-                © {new Date().getFullYear()} GuíaClick - Todos los derechos reservados
-            </footer>
+
         </div >
     );
 };
