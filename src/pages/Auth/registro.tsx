@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { createUser } from '../../services/api';
 import logo from "../../assets/LogoGC.png";
 import bgImage from "../../assets/background.jpg";

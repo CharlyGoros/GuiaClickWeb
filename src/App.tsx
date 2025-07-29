@@ -13,8 +13,8 @@ import SuperadminEmpresas from './pages/SuperAdminEmpresas';
 import UsersListPage from './pages/UserListPage';
 import ManualsListPage from './pages/ManualListPage';
 import DashboardEmpresasPage from './pages/DashboardEmpresas';
-import Login from './pages/auth/login';
-import Register from './pages/auth/registro';
+import Login from './pages/Auth/login';
+import Register from './pages/Auth/registro';
 const Footer: React.FC = () => {
   return (
     <footer className="fixed bottom-0 left-0 w-full bg-white shadow-inner text-center py-4 text-sm text-gray-500 z-50">

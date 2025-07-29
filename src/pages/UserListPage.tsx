@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from './DashboardLayout';
 import useAuth from '@/hooks/useAuth';
-import { c } from 'node_modules/vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
+//import { c } from 'node_modules/vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
 
 interface Usuario {
     id: number;
