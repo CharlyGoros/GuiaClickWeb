@@ -170,7 +170,7 @@ const Favorites: React.FC = () => {
                     <Search className="absolute right-5 top-1/2 transform -translate-y-1/2 text-white w-5 h-5" />
                 </div>
 
-                {/* {user?.company_id && (
+                {user?.company_id && (
                     <div className="max-w-xl mx-auto mb-4 flex items-center gap-2">
                         <input
                             id="filtro-empresa"
@@ -184,7 +184,7 @@ const Favorites: React.FC = () => {
                         </label>
                     </div>
                 )}
-*/}
+
 
                 {loading ? (
                     <p className="text-center text-gray-500">Cargando manuales…</p>
@@ -235,53 +235,62 @@ const Favorites: React.FC = () => {
                     </div>
                 )}
 
-
-
-                <AnimatePresence>
-                    {showPopup && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
-                        >
-                            <motion.div
-                                initial={{ scale: 0.9 }}
-                                animate={{ scale: 1 }}
-                                exit={{ scale: 0.9 }}
-                                className="bg-white rounded-md shadow-lg p-6 w-80 text-center"
+                {user && !user?.company_id && user?.role != -1 && (
+                    <>
+                        <div className="flex justify-center mt-10">
+                            <Button
+                                className="bg-[#64C1C1] text-white px-6 py-3 rounded-md shadow hover:bg-[#50a5a5]"
+                                onClick={() => setShowPopup(true)}
                             >
-                                <p className="text-sm text-gray-700 mb-3">Introduce el código de empresa</p>
-                                <Input
-                                    value={codigoEmpresa}
-                                    onChange={(e) => setCodigoEmpresa(e.target.value)}
-                                    placeholder="3FK30D"
-                                    className="mb-4 text-center bg-[#64C1C1] text-white font-semibold placeholder-white"
-                                />
-                                <div className="flex justify-between">
-                                    <Button
-                                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
-                                        onClick={() => setShowPopup(false)}
+                                Código empresarial
+                            </Button>
+                        </div>
+
+                        <AnimatePresence>
+                            {showPopup && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
+                                >
+                                    <motion.div
+                                        initial={{ scale: 0.9 }}
+                                        animate={{ scale: 1 }}
+                                        exit={{ scale: 0.9 }}
+                                        className="bg-white rounded-md shadow-lg p-6 w-80 text-center"
                                     >
-                                        Cancelar
-                                    </Button>
-                                    <Button
-                                        className="bg-[#64C1C1] hover:bg-[#50a5a5] text-white px-4 py-2 rounded"
-                                        onClick={handleAceptarCodigo}
-                                    >
-                                        Aceptar
-                                    </Button>
-                                </div>
-                            </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </>
+                                        <p className="text-sm text-gray-700 mb-3">Introduce el código de empresa</p>
+                                        <Input
+                                            value={codigoEmpresa}
+                                            onChange={(e) => setCodigoEmpresa(e.target.value)}
+                                            placeholder="3FK30D"
+                                            className="mb-4 text-center bg-[#64C1C1] text-white font-semibold placeholder-white"
+                                        />
+                                        <div className="flex justify-between">
+                                            <Button
+                                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
+                                                onClick={() => setShowPopup(false)}
+                                            >
+                                                Cancelar
+                                            </Button>
+                                            <Button
+                                                className="bg-[#64C1C1] hover:bg-[#50a5a5] text-white px-4 py-2 rounded"
+                                                onClick={handleAceptarCodigo}
+                                            >
+                                                Aceptar
+                                            </Button>
+                                        </div>
+                                    </motion.div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </>
                 )}
+            </div>
+
+
         </div>
-
-
-        </div >
     );
 };
 
