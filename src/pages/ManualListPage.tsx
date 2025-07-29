@@ -39,7 +39,7 @@ const ManualsListPage: React.FC = () => {
 
     const confirmDelete = async () => {
         if (!manualToDelete) return;
-        await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuales/${manualToDelete.id}`, {
+        await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuals/${manualToDelete.id}`, {
             method: 'DELETE',
         });
         setManuales(prev => prev.filter(m => m.id !== manualToDelete.id));
