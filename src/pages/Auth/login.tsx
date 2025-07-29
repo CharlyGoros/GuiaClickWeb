@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import logo from "../../assets/LogoGC.png";
 import bgImage from "../../assets/background.jpg";
@@ -90,9 +90,9 @@ const Login: React.FC = () => {
 
                 <div className="text-center mt-5 text-sm text-gray-600">
                     ¿No tenés cuenta?{" "}
-                    <Link to="/register" className="text-[#117b7b] hover:underline">
+                    <div onClick={() => navigate("/registro")} className="inline-block text-[#117b7b] hover:underline cursor-pointer">
                         Regístrate
-                    </Link>
+                    </div>
                 </div>
             </div>
         </div>

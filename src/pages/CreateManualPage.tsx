@@ -113,7 +113,7 @@ const CrearManualPage: React.FC = () => {
             };
 
             await axios.post(
-                "http://localhost:3000/.netlify/functions/server/api/manuals",
+                "https://guiaclick.netlify.app/.netlify/functions/server/api/manuals",
                 payload
             );
 

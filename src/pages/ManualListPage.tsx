@@ -25,7 +25,7 @@ const ManualsListPage: React.FC = () => {
     const isAdmin = user?.role == 1;
 
     useEffect(() => {
-        fetch('http://localhost:3000/.netlify/functions/server/api/manuales-dashboard')
+        fetch('https://guiaclick.netlify.app/.netlify/functions/server/api/manuales-dashboard')
             .then(res => res.json())
             .then(data => {
                 let list: Manual[] = data.body || [];
@@ -39,7 +39,7 @@ const ManualsListPage: React.FC = () => {
 
     const confirmDelete = async () => {
         if (!manualToDelete) return;
-        await fetch(`http://localhost:3000/.netlify/functions/server/api/manuales/${manualToDelete.id}`, {
+        await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuales/${manualToDelete.id}`, {
             method: 'DELETE',
         });
         setManuales(prev => prev.filter(m => m.id !== manualToDelete.id));

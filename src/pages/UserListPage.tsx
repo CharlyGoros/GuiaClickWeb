@@ -1,32 +1,66 @@
-// src/pages/UsersListPage.tsx
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from './DashboardLayout';
+import useAuth from '@/hooks/useAuth';
+import { c } from 'node_modules/vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
 
 interface Usuario {
     id: number;
     name: string;
     email: string;
-    role: string;
+    role: string | number;
+    company_id?: number | null;
 }
 
 const UsersListPage: React.FC = () => {
+    const { user } = useAuth();
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [userToDelete, setUserToDelete] = useState<Usuario | null>(null);
 
     useEffect(() => {
-        fetch('http://localhost:3000/.netlify/functions/server/api/usuarios')
-            .then(res => res.json())
-            .then(data => setUsuarios(data.body || []))
-            .catch(console.error);
-    }, []);
+        const fetchUsers = async () => {
+            try {
+                const res = await fetch('https://guiaclick.netlify.app/.netlify/functions/server/api/usuarios');
+                const data = await res.json();
+
+                let list: Usuario[] = data.body || [];
+
+                // 🔹 Si es admin de empresa, filtra solo los de su empresa
+                if (user?.role === 1 && user.company_id) {
+                    console.log("🔎 Filtrando usuarios para admin de empresa:", user.company_id);
+
+                    list = list.filter((u) => {
+                        const include = u.company_id == user.company_id && u.id != user.id;
+                        console.log(u);
+                        console.log(
+                            `Usuario ID: ${u.id}, Nombre: ${u.name}, Empresa: ${u.company_id} → ${include ? "INCLUIDO ✅" : "EXCLUIDO ❌"
+                            }`
+                        );
+                        return include;
+                    });
+                }
+
+                // 🔹 Si es superadmin (-1), ve todos
+                setUsuarios(list);
+            } catch (err) {
+                console.error('Error cargando usuarios:', err);
+            }
+        };
+
+        fetchUsers();
+    }, [user]);
 
     const confirmDelete = async () => {
         if (!userToDelete) return;
-        await fetch(`http://localhost:3000/.netlify/functions/server/api/usuarios/${userToDelete.id}`, {
-            method: 'DELETE',
-        });
-        setUsuarios(prev => prev.filter(u => u.id !== userToDelete.id));
-        setUserToDelete(null);
+        try {
+            await fetch(
+                `https://guiaclick.netlify.app/.netlify/functions/server/api/usuarios/${userToDelete.id}`,
+                { method: 'DELETE' }
+            );
+            setUsuarios(prev => prev.filter(u => u.id !== userToDelete.id));
+            setUserToDelete(null);
+        } catch (err) {
+            console.error('Error eliminando usuario:', err);
+        }
     };
 
     return (
@@ -47,7 +81,13 @@ const UsersListPage: React.FC = () => {
                             <tr key={u.id} className="border-t text-sm">
                                 <td className="p-3">{u.name}</td>
                                 <td className="p-3 text-blue-500">{u.email}</td>
-                                <td className="p-3">{u.role}</td>
+                                <td className="p-3">
+                                    {u.role === -1
+                                        ? 'Superadmin'
+                                        : u.role === 1
+                                            ? 'Admin Empresa'
+                                            : 'Usuario'}
+                                </td>
                                 <td className="p-3">
                                     <button
                                         onClick={() => setUserToDelete(u)}
@@ -72,10 +112,7 @@ const UsersListPage: React.FC = () => {
             {/* Modal de confirmación */}
             {userToDelete && (
                 <div className="fixed inset-0 flex items-center justify-center z-50">
-                    {/* Fondo con blur y transparencia */}
                     <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
-
-                    {/* Caja del modal */}
                     <div className="relative bg-white rounded-lg shadow-lg p-6 w-96">
                         <h2 className="text-lg font-bold text-gray-800 mb-4">
                             Confirmar eliminación

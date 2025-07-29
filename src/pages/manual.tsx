@@ -48,10 +48,10 @@ export const ManualPage: React.FC = () => {
             setLoading(true);
             try {
                 const [mRes, sRes, rRes, fRes] = await Promise.all([
-                    fetch(`http://localhost:3000/.netlify/functions/server/api/manuales/${manualId}`).then(r => r.json()),
-                    fetch(`http://localhost:3000/.netlify/functions/server/api/manuals/${manualId}/steps`).then(r => r.json()),
-                    fetch(`http://localhost:3000/.netlify/functions/server/api/valoraciones/manuales/${manualId}`).then(r => r.json()),
-                    fetch(`http://localhost:3000/.netlify/functions/server/api/users/${currentUserId}/favorites/${manualId}/check`).then(r => r.json()),
+                    fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuales/${manualId}`).then(r => r.json()),
+                    fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuals/${manualId}/steps`).then(r => r.json()),
+                    fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/valoraciones/manuales/${manualId}`).then(r => r.json()),
+                    fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/users/${currentUserId}/favorites/${manualId}/check`).then(r => r.json()),
                 ]);
                 if (!cancelled) {
                     setManual(mRes.body);
@@ -71,7 +71,7 @@ export const ManualPage: React.FC = () => {
 
     const toggleFavorite = async () => {
         try {
-            await fetch(`/api/users/${currentUserId}/favorites/${manualId}`, {
+            await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/users/${currentUserId}/favorites/${manualId}`, {
                 method: isFav ? "DELETE" : "POST"
             });
             setIsFav(!isFav);
@@ -81,14 +81,14 @@ export const ManualPage: React.FC = () => {
     };
 
     const reloadRatings = async () => {
-        const rRes = await fetch(`/api/valoraciones/manuales/${manualId}`).then(r => r.json());
+        const rRes = await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/valoraciones/manuales/${manualId}`).then(r => r.json());
         setRatings(rRes.body);
     };
 
     const handleDeleteRating = async (ratingId: number) => {
         if (!window.confirm("¿Estás seguro de eliminar tu opinión?")) return;
         try {
-            await fetch(`/api/ratings/${currentUserId}/${ratingId}`, { method: "DELETE" });
+            await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/ratings/${currentUserId}/${ratingId}`, { method: "DELETE" });
             reloadRatings();
         } catch (e) {
             console.error(e);
@@ -103,7 +103,7 @@ export const ManualPage: React.FC = () => {
     };
     const confirmAdd = async () => {
         try {
-            await fetch(`/api/ratings`, {
+            await fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/ratings`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

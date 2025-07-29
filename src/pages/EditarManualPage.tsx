@@ -36,8 +36,8 @@ const EditarManualPage: React.FC = () => {
             setLoading(true);
             try {
                 const [manualRes, stepsRes] = await Promise.all([
-                    axios.get(`http://localhost:3000/.netlify/functions/server/api/manuales/${id}`),
-                    axios.get(`http://localhost:3000/.netlify/functions/server/api/manuals/${id}/steps`)
+                    axios.get(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuales/${id}`),
+                    axios.get(`https://guiaclick.netlify.app/.netlify/functions/server/api/manuals/${id}/steps`)
                 ]);
 
                 const manualData = manualRes.data.body;
@@ -155,7 +155,7 @@ const EditarManualPage: React.FC = () => {
             };
 
             await axios.put(
-                `http://localhost:3000/.netlify/functions/server/api/manuals/${id}`,
+                `https://guiaclick.netlify.app/.netlify/functions/server/api/manuals/${id}`,
                 payload
             );
 

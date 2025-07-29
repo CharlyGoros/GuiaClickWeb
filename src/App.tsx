@@ -1,9 +1,6 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useAuth from './hooks/useAuth';
 import Navbar from './components/Navbar';
-
-import Login from './pages/Auth/login';
-import Register from './pages/Auth/registro';
 import Home from './pages/Home';
 import { ManualPage } from './pages/manual';
 import CrearManualPage from './pages/CreateManualPage';
@@ -16,43 +13,66 @@ import SuperadminEmpresas from './pages/SuperAdminEmpresas';
 import UsersListPage from './pages/UserListPage';
 import ManualsListPage from './pages/ManualListPage';
 import DashboardEmpresasPage from './pages/DashboardEmpresas';
+import Login from './pages/auth/login';
+import Register from './pages/auth/registro';
+const Footer: React.FC = () => {
+  return (
+    <footer className="fixed bottom-0 left-0 w-full bg-white shadow-inner text-center py-4 text-sm text-gray-500 z-50">
+      © {new Date().getFullYear()} GuíaClick - Todos los derechos reservados
+    </footer>
+  );
+};
+
+
+
+const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { pathname } = useLocation();
+  const hideNavAndFooter = pathname === '/login' || pathname === '/registro';
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {!hideNavAndFooter && <Navbar />}
+      <main className="flex-grow">{children}</main>
+      {!hideNavAndFooter && <Footer />}
+    </div>
+  );
+};
 
 const App: React.FC = () => {
   const { user } = useAuth();
 
   return (
     <Router>
-      {/* Navbar solo si hay usuario */}
-      {<Navbar />}
+      <AppLayout>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
+          <Route path="/registro" element={<Register />} />
+          <Route path="/manual/:id" element={<ManualPage />} />
 
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
-        <Route path="/registro" element={!user ? <Register /> : <Navigate to="/" replace />} />
-        <Route path="/manual/:id" element={<ManualPage />} />
+          {/* Protected routes */}
+          <Route path="/favorites" element={<PrivateRoute element={<Favorites />} />} />
+          <Route path="/crear-manual" element={<PrivateRoute element={<CrearManualPage />} />} />
+          <Route path="/editar-manual/:id" element={<PrivateRoute element={<EditarManualPage />} />} />
 
-        {/* Protected routes */}
-        <Route path="/favorites" element={<PrivateRoute element={<Favorites />} />} />
-        <Route path="/crear-manual" element={<PrivateRoute element={<CrearManualPage />} />} />
-        <Route path="/editar-manual/:id" element={<PrivateRoute element={<EditarManualPage />} />} />
+          {/* Empresa management */}
+          <Route path="/crear-empresa" element={<PrivateRoute element={<CrearEmpresa />} />} />
+          <Route path="/editar-empresa" element={<PrivateRoute element={<EmpresaEditarPage />} />} />
 
-        {/* Empresa management */}
-        <Route path="/crear-empresa" element={<PrivateRoute element={<CrearEmpresa />} />} />
-        <Route path="/editar-empresa" element={<PrivateRoute element={<EmpresaEditarPage />} />} />
+          {/* Dashboard sub-routes */}
+          <Route path="/dashboard/users" element={<PrivateRoute element={<UsersListPage />} />} />
+          <Route path="/dashboard/manuals" element={<PrivateRoute element={<ManualsListPage />} />} />
+          <Route path="/dashboard/empresas" element={<PrivateRoute element={<DashboardEmpresasPage />} />} />
+          <Route path="/dashboard" element={<Navigate to="/dashboard/users" replace />} />
 
-        {/* Dashboard sub-routes */}
-        <Route path="/dashboard/users" element={<PrivateRoute element={<UsersListPage />} />} />
-        <Route path="/dashboard/manuals" element={<PrivateRoute element={<ManualsListPage />} />} />
-        <Route path="/dashboard/empresas" element={<PrivateRoute element={<DashboardEmpresasPage />} />} />
-        <Route path="/dashboard" element={<Navigate to="/dashboard/users" replace />} />
+          {/* Legacy superadmin route */}
+          <Route path="/editar-empresa-admin" element={<PrivateRoute element={<SuperadminEmpresas />} />} />
 
-        {/* Legacy superadmin route */}
-        <Route path="/editar-empresa-admin" element={<PrivateRoute element={<SuperadminEmpresas />} />} />
-
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AppLayout>
     </Router>
   );
 };

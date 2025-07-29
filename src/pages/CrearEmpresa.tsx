@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CrearEmpresa: React.FC = () => {
     const [empresa, setEmpresa] = useState("");
@@ -9,6 +10,8 @@ const CrearEmpresa: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [mensaje, setMensaje] = useState("");
 
+    const navigate = useNavigate();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -16,7 +19,7 @@ const CrearEmpresa: React.FC = () => {
 
         try {
             await axios.post(
-                "http://localhost:3000/.netlify/functions/server/api/empresas/crear",
+                "https://guiaclick.netlify.app/.netlify/functions/server/api/empresas/crear",
                 {
                     empresa_nombre: empresa,
                     admin_nombre: adminNombre,
@@ -26,10 +29,11 @@ const CrearEmpresa: React.FC = () => {
             );
 
             setMensaje("✅ Empresa y usuario creados correctamente.");
-            setEmpresa("");
-            setAdminNombre("");
-            setAdminEmail("");
-            setAdminPassword("");
+
+            // Espera un par de segundos para mostrar el mensaje
+            setTimeout(() => {
+                navigate(-1); // 🔹 vuelve a la página anterior
+            }, 1500);
         } catch (error: unknown) {
             console.error("Error:", error);
             setMensaje(

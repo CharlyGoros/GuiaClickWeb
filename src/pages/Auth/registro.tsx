@@ -134,9 +134,10 @@ const Register: React.FC = () => {
 
                 <div className="text-center mt-4 text-sm text-gray-600">
                     ¿Ya tienes cuenta?{" "}
-                    <Link to="/login" className="text-[#127C82] hover:underline">
+
+                    <div onClick={() => navigate("/login")} className="inline-block text-[#117b7b] hover:underline cursor-pointer">
                         Iniciar Sesión
-                    </Link>
+                    </div>
                 </div>
             </div>
         </div>

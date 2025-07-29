@@ -20,6 +20,7 @@ const SuperadminEmpresas: React.FC = () => {
 
     // Modal
     const [modalMessage, setModalMessage] = useState<string | null>(null);
+    const [companyToDelete, setCompanyToDelete] = useState<Company | null>(null);
 
     useEffect(() => {
         if (user?.role !== -1) {
@@ -28,7 +29,7 @@ const SuperadminEmpresas: React.FC = () => {
     }, [user, navigate]);
 
     useEffect(() => {
-        fetch(`http://localhost:3000/.netlify/functions/server/api/companies`)
+        fetch(`https://guiaclick.netlify.app/.netlify/functions/server/api/companies`)
             .then((res) => res.json())
             .then((data) => setCompanies(data.body))
             .catch(console.error);
@@ -44,7 +45,7 @@ const SuperadminEmpresas: React.FC = () => {
         if (!selected) return;
         try {
             const response = await fetch(
-                `http://localhost:3000/.netlify/functions/server/api/companies/${selected.id}`,
+                `https://guiaclick.netlify.app/.netlify/functions/server/api/companies/${selected.id}`,
                 {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
@@ -57,7 +58,7 @@ const SuperadminEmpresas: React.FC = () => {
             );
             setCompanies(updated);
             setSelected(null);
-            setModalMessage("Empresa actualizada correctamente ");
+            setModalMessage("Empresa actualizada correctamente.");
         } catch (err) {
             setModalMessage("Error al guardar: " + err);
         }
@@ -67,7 +68,7 @@ const SuperadminEmpresas: React.FC = () => {
         if (!selected) return;
         try {
             const response = await fetch(
-                `http://localhost:3000/.netlify/functions/server/api/access-codes`,
+                `https://guiaclick.netlify.app/.netlify/functions/server/api/access-codes`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -77,9 +78,27 @@ const SuperadminEmpresas: React.FC = () => {
             if (!response.ok) throw new Error("Error al generar código");
             const data = await response.json();
             setLastCode(data.body.code);
-            setModalMessage("Código generado correctamente ");
+            setModalMessage("Código generado correctamente.");
         } catch (err) {
             setModalMessage("Error generando código: " + err);
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!companyToDelete) return;
+        try {
+            const response = await fetch(
+                `https://guiaclick.netlify.app/.netlify/functions/server/api/companies/${companyToDelete.id}`,
+                { method: "DELETE" }
+            );
+            if (!response.ok) throw new Error("Error al eliminar empresa");
+
+            setCompanies(prev => prev.filter(c => c.id !== companyToDelete.id));
+            setModalMessage("Empresa eliminada correctamente.");
+        } catch (err) {
+            setModalMessage("Error eliminando empresa: " + err);
+        } finally {
+            setCompanyToDelete(null);
         }
     };
 
@@ -110,12 +129,20 @@ const SuperadminEmpresas: React.FC = () => {
                                     {new Date(empresa.created_at).toLocaleDateString()}
                                 </p>
                             </div>
-                            <button
-                                onClick={() => handleEdit(empresa)}
-                                className="bg-[#127C82] text-white px-4 py-2 rounded hover:bg-[#0e6a70]"
-                            >
-                                Editar
-                            </button>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => handleEdit(empresa)}
+                                    className="bg-[#127C82] text-white px-4 py-2 rounded hover:bg-[#0e6a70]"
+                                >
+                                    Editar
+                                </button>
+                                <button
+                                    onClick={() => setCompanyToDelete(empresa)}
+                                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                                >
+                                    Eliminar
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -162,6 +189,33 @@ const SuperadminEmpresas: React.FC = () => {
                             </button>
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* Modal de confirmación de eliminación */}
+            {companyToDelete && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+                    <div className="relative bg-white rounded-lg shadow-lg p-6 w-96">
+                        <h2 className="text-lg font-bold text-gray-800 mb-4">Confirmar eliminación</h2>
+                        <p className="text-gray-600 mb-6">
+                            ¿Seguro que deseas eliminar la empresa "{companyToDelete.name}"?
+                        </p>
+                        <div className="flex justify-between">
+                            <button
+                                onClick={() => setCompanyToDelete(null)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleConfirmDelete}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
 
