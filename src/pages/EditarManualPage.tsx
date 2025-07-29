@@ -159,11 +159,11 @@ const EditarManualPage: React.FC = () => {
                 payload
             );
 
-            setModalMessage("Manual actualizado correctamente ✅");
+            setModalMessage("Manual actualizado correctamente ");
             setTimeout(() => navigate("/dashboard/users"), 1500);
         } catch (err) {
             console.error("Error actualizando manual:", err);
-            setModalMessage("Error al actualizar el manual ❌");
+            setModalMessage("Error al actualizar el manual ");
         } finally {
             setLoading(false);
         }
